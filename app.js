@@ -59,32 +59,35 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('confirm-word').addEventListener('click', startMultiGame);
   document.getElementById('restart-button').addEventListener('click', resetGame);
 
-  setupDifficultySlider('difficulty', 'difficulty-info');
-  setupDifficultySlider('multi-difficulty', 'multi-difficulty-info');
+  setupDifficultyButtons();
+
+  document.querySelector('.difficulty-btn[data-difficulty="25"]').click();
 });
 
 function showConfig(mode) {
-  gameState.mode = mode;
   document.getElementById('start-screen').classList.add('hidden');
   document.getElementById(`config-${mode}`).classList.remove('hidden');
+  
+  // Añade esto para el modo multijugador
+  if(mode === 'multi') {
+    document.getElementById('overlay').style.display = 'block';
+  }
 }
 
-function setupDifficultySlider(sliderId, infoId) {
-  const slider = document.getElementById(sliderId);
-  const info = document.getElementById(infoId);
-  const difficultyKeys = Object.keys(DIFFICULTY_LEVELS).map(Number).sort((a, b) => a - b);
-
-  const updateDifficulty = (value) => {
-    const closestKey = difficultyKeys.reduce((prev, curr) => 
-      Math.abs(curr - value) < Math.abs(prev - value) ? curr : prev
-    );
-    gameState.difficulty = closestKey;
-    slider.value = closestKey;
-    info.textContent = DIFFICULTY_LEVELS[closestKey].name;
-  };
-
-  slider.addEventListener('input', (e) => updateDifficulty(parseInt(e.target.value)));
-  updateDifficulty(parseInt(slider.value));
+function setupDifficultyButtons() {
+  document.querySelectorAll('.difficulty-btn').forEach(button => {
+    button.addEventListener('click', (e) => {
+      // Remover selección anterior
+      document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.remove('selected'));
+      
+      // Seleccionar nuevo botón
+      const selectedButton = e.target;
+      selectedButton.classList.add('selected');
+      
+      // Actualizar dificultad
+      gameState.difficulty = parseInt(selectedButton.dataset.difficulty);
+    });
+  });
 }
 
 function startSingleGame() {

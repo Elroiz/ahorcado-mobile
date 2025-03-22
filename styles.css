@@ -4,13 +4,22 @@ body.mobile-ui {
   margin: 0;
   padding: 0;
   min-height: 100vh;
-  background: #f0dec4 url('bg-pattern.png');
   touch-action: manipulation;
   -webkit-user-select: none;
   user-select: none;
   font-size: 16px;
   -webkit-text-size-adjust: none;
   text-size-adjust: none;
+}
+
+#bg-image {
+  background-image: url('img/bg.png');
+  filter: sepia(1) saturate(0.5) blur(3px);
+  -webkit-filter: sepia(1) saturate(0.5) blur(3px);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  min-height: 100vh;
 }
 
 .hidden {
@@ -25,6 +34,24 @@ body.mobile-ui {
   width: 100%;
   height: 100%;
   overflow-y: auto;
+}
+
+#start-screen {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+#config-single {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+#config-multi {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .start-content {
@@ -86,35 +113,42 @@ body.mobile-ui {
   border-radius: 10px;
   background: white;
   text-align: center;
+  box-sizing: border-box;
 }
 
-/* Slider Dificultad */
-input[type="range"] {
-  width: 100%;
-  height: 10px;
-  background: #ddd;
-  border-radius: 5px;
-  -webkit-appearance: none;
+/* Botones de Dificultad */
+.difficulty-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-top: 12px;
 }
 
-input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 28px;
-  height: 28px;
-  background: #5a2d0c;
-  border-radius: 50%;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.difficulty-info {
-  font-size: 1rem;
+.difficulty-btn {
+  padding: 12px;
+  border: 2px solid #8B4513;
+  border-radius: 8px;
+  background: #f0dec4;
   color: #5a2d0c;
-  text-align: center;
-  margin-top: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.difficulty-btn.selected {
+  background: #8B4513;
+  color: white;
+  border-color: #6B3410;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.difficulty-btn:active {
+  transform: scale(0.95);
 }
 
 /* Popups */
-.overlay {
+#overlay {
+  display: none;
   position: fixed;
   top: 0;
   left: 0;

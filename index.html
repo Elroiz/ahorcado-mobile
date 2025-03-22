@@ -8,6 +8,9 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body class="mobile-ui">
+  <!-- Imagen de fondo -->
+  <div id="bg-image"></div>
+
   <!-- Pantalla Principal -->
   <div id="start-screen" class="screen">
     <div class="start-content">
@@ -22,7 +25,7 @@
   <!-- Configuración 1 Jugador -->
   <div id="config-single" class="screen hidden">
     <div class="config-container">
-      <h2>⚔️ Modo Individual</h2>
+      <h2>Modo Individual</h2>
       <div class="input-group">
         <input type="text" id="player1-name" placeholder="Tu nombre" required>
       </div>
@@ -35,8 +38,12 @@
       </div>
       <div class="input-group">
         <label>Dificultad:</label>
-        <input type="range" id="difficulty" min="0" max="100" value="50" step="25">
-        <div id="difficulty-info" class="difficulty-info"></div>
+        <div class="difficulty-buttons">
+          <button class="difficulty-btn" data-difficulty="0">Fácil</button>
+          <button class="difficulty-btn" data-difficulty="25" selected>Normal</button>
+          <button class="difficulty-btn" data-difficulty="50">Difícil</button>
+          <button class="difficulty-btn" data-difficulty="100">Extremo</button>
+        </div>
       </div>
       <button id="start-single-game" class="confirm-btn">COMENZAR</button>
     </div>
@@ -45,7 +52,7 @@
   <!-- Configuración 2 Jugadores -->
   <div id="config-multi" class="screen hidden">
     <div class="config-container">
-      <h2>⚔️ Multijugador</h2>
+      <h2>Multijugador</h2>
       <div class="input-group">
         <input type="text" id="multi-player1" placeholder="Jugador 1" required>
       </div>
@@ -54,8 +61,12 @@
       </div>
       <div class="input-group">
         <label>Dificultad:</label>
-        <input type="range" id="multi-difficulty" min="0" max="100" value="50" step="25">
-        <div id="multi-difficulty-info" class="difficulty-info"></div>
+        <div class="difficulty-buttons">
+          <button class="difficulty-btn" data-difficulty="0">Fácil</button>
+          <button class="difficulty-btn" data-difficulty="25" selected>Normal</button>
+          <button class="difficulty-btn" data-difficulty="50">Difícil</button>
+          <button class="difficulty-btn" data-difficulty="100">Extremo</button>
+        </div>
       </div>
       <button id="next-multi" class="confirm-btn">SIGUIENTE</button>
     </div>
