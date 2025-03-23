@@ -6,11 +6,33 @@ const DIFFICULTY_LEVELS = {
 };
 
 const WORD_LIST = [
-  { word: "DRAGON", hint: "Criatura mitológica", theme: "fantasia" },
-  { word: "CASTILLO", hint: "Fortaleza medieval", theme: "medieval" },
-  { word: "ESPADA", hint: "Arma blanca", theme: "medieval" },
-  { word: "HECHICERO", hint: "Mago poderoso", theme: "fantasia" },
-  { word: "CABALLERO", hint: "Guerrero noble", theme: "medieval" }
+  { word: "BOSQUE", hint: "Área densamente poblada de árboles", theme: "Naturaleza" },
+  { word: "MONTAÑA", hint: "Elevación natural de terreno", theme: "Naturaleza" },
+  { word: "GEISER", hint: "Fuente termal que emite agua caliente y vapor", theme: "Naturaleza" },
+  { word: "DEMOCRACIA", hint: "Sistema político basado en el gobierno del pueblo", theme: "Historia y Política" },
+  { word: "DICTADURA", hint: "Gobierno autoritario ejercido por una sola persona", theme: "Historia y Política" },
+  { word: "MONARQUIA", hint: "Forma de gobierno liderada por un rey o reina", theme: "Historia y Política" },
+  { word: "PINTURA", hint: "Arte de representar imágenes con colores", theme: "Arte y Cultura" },
+  { word: "ESCULTURA", hint: "Obra de arte tridimensional", theme: "Arte y Cultura" },
+  { word: "CINE", hint: "Lugar para ver películas", theme: "Arte y Cultura" },
+  { word: "DUENDE", hint: "Criatura mágica pequeña", theme: "Mitología y Fantasía" },
+  { word: "VAMPIRO", hint: "Criatura de la noche que se alimenta de sangre", theme: "Mitología y Fantasía" },
+  { word: "ZOMBIE", hint: "Muerto viviente", theme: "Mitología y Fantasía" },
+  { word: "QUIMICA", hint: "Ciencia que estudia las sustancias y sus transformaciones", theme: "Ciencia y Tecnología" },
+  { word: "FISICA", hint: "Ciencia que estudia la naturaleza y sus fenómenos", theme: "Ciencia y Tecnología" },
+  { word: "BIOLOGIA", hint: "Ciencia que estudia los seres vivos", theme: "Ciencia y Tecnología" },
+  { word: "JUPITER", hint: "Planeta más grande del sistema solar", theme: "Astronomía" },
+  { word: "URANO", hint: "Planeta con un eje de rotación inclinado", theme: "Astronomía" },
+  { word: "NEPTUNO", hint: "Planeta más alejado del Sol", theme: "Astronomía" },
+  { word: "BRILLO", hint: "Producto cosmético que da luminosidad a los labios", theme: "Moda y complementos" },
+  { word: "RIMEL", hint: "Producto cosmético para oscurecer y alargar las pestañas", theme: "Moda y complementos" },
+  { word: "SOMBRA", hint: "Producto cosmético para colorear los párpados", theme: "Moda y complementos" },
+  { word: "KIT", hint: "Conjunto de piezas para una reparación o mejora", theme: "Mundo del motor" },
+  { word: "LUBRICANTE", hint: "Producto que reduce fricción en el motor", theme: "Mundo del motor" },
+  { word: "MANILLAR", hint: "Parte de la moto para dirigir la dirección", theme: "Mundo del motor" },
+  { word: "TIRO", hint: "Acción de lanzar el balón hacia la portería", theme: "Deportes" },
+  { word: "FALTA", hint: "Infracción cometida durante el juego", theme: "Deportes" },
+  { word: "SANCION", hint: "Castigo impuesto por una falta", theme: "Deportes" }
 ];
 
 let gameState = {
@@ -55,7 +77,18 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('single-player-btn').addEventListener('click', () => showConfig('single'));
   document.getElementById('multi-player-btn').addEventListener('click', () => showConfig('multi'));
   document.getElementById('start-single-game').addEventListener('click', startSingleGame);
-  document.getElementById('next-multi').addEventListener('click', setupMultiplayerWord);
+  document.getElementById('next-multi').addEventListener('click', function() {
+    const player1 = document.getElementById('multi-player1').value.trim();
+    const player2 = document.getElementById('multi-player2').value.trim();
+    
+    if (!player1 || !player2) {
+      showMobileAlert('¡Nombres requeridos!');
+      return;
+    }
+    
+    gameState.players = [player1, player2];
+    showWordPopup(); // Esto ahora mostrará el popup correctamente
+  });
   document.getElementById('confirm-word').addEventListener('click', startMultiGame);
   document.getElementById('restart-button').addEventListener('click', resetGame);
 
@@ -67,11 +100,6 @@ document.addEventListener('DOMContentLoaded', () => {
 function showConfig(mode) {
   document.getElementById('start-screen').classList.add('hidden');
   document.getElementById(`config-${mode}`).classList.remove('hidden');
-  
-  // Añade esto para el modo multijugador
-  if(mode === 'multi') {
-    document.getElementById('overlay').style.display = 'block';
-  }
 }
 
 function setupDifficultyButtons() {
@@ -118,15 +146,23 @@ function setupMultiplayerWord() {
 }
 
 function showWordPopup() {
-  document.getElementById('config-multi').classList.add('hidden');
-  document.getElementById('overlay').style.display = 'block';
-  document.getElementById('word-popup').style.display = 'block';
-  document.getElementById('current-player').textContent = `${gameState.players[0]}:`;
+  document.getElementById('popup-container').classList.remove('hidden');
+  document.getElementById('current-player').textContent = `${gameState.players[0]}, escribe la palabra:`;
+  document.getElementById('secret-word-input').focus();
 }
 
 function startMultiGame() {
   const secretWord = document.getElementById('secret-word-input').value.trim().toUpperCase();
-  if (!secretWord || !/^[A-ZÑ]+$/.test(secretWord)) return showMobileAlert('Palabra inválida');
+  
+  if (!secretWord) {
+    showMobileAlert('¡Debes escribir una palabra!');
+    return;
+  }
+  
+  if (!/^[A-ZÑ]+$/.test(secretWord)) {
+    showMobileAlert('Solo letras permitidas');
+    return;
+  }
   
   gameState.secretWord = secretWord;
   hideOverlay();
@@ -162,15 +198,15 @@ function resetKeyboard() {
   
   const letters = 'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ'.split('');
   const rows = [
-    letters.slice(0, 7),
-    letters.slice(7, 14),
-    letters.slice(14, 21),
-    letters.slice(21, 27)
+    letters.slice(0, 9),   
+    letters.slice(9, 18),  
+    letters.slice(18, 27)  
   ];
 
-  rows.forEach(row => {
+  rows.forEach((row, index) => {
     const rowDiv = document.createElement('div');
-    rowDiv.className = 'keyboard-row';
+    rowDiv.className = `keyboard-row row-${index + 1}`;
+    
     row.forEach(letter => {
       const button = document.createElement('button');
       button.textContent = letter;
@@ -274,6 +310,6 @@ function showMobileAlert(message) {
 }
 
 function hideOverlay() {
-  document.getElementById('overlay').style.display = 'none';
-  document.getElementById('word-popup').style.display = 'none';
+  document.getElementById('popup-container').classList.add('hidden');
+  document.getElementById('secret-word-input').value = '';
 }

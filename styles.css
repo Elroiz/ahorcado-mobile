@@ -14,8 +14,6 @@ body.mobile-ui {
 
 #bg-image {
   background-image: url('img/bg.png');
-  filter: sepia(1) saturate(0.5) blur(3px);
-  -webkit-filter: sepia(1) saturate(0.5) blur(3px);
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -147,33 +145,44 @@ body.mobile-ui {
 }
 
 /* Popups */
-#overlay {
-  display: none;
+.popup-container {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
   z-index: 1000;
 }
 
 .popup {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
   background: white;
-  padding: 20px;
+  padding: 25px;
   border-radius: 15px;
-  z-index: 1001;
   width: 85%;
   max-width: 400px;
   text-align: center;
+  animation: popIn 0.3s ease-out;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+@keyframes popIn {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.popup.visible {
+  display: block;
 }
 
 #secret-word-input {
-  width: 100%;
+  width: 90%;
   padding: 15px;
   margin: 15px 0;
   font-size: 1.2rem;
@@ -184,7 +193,7 @@ body.mobile-ui {
 
 .confirm-btn {
   background: #2aa367;
-  color: white;
+  color: #faeadd;
   padding: 15px;
   border: none;
   border-radius: 10px;
@@ -195,22 +204,30 @@ body.mobile-ui {
 
 /* Juego */
 #hangman-container {
-  max-width: 280px;
-  margin: 15px auto;
+  margin-bottom: -4px;
 }
 
 .ahorcado {
   width: 100%;
-  height: auto;
+  height: 250px;
 }
 
 #word-display {
   font-size: 1.8rem;
-  letter-spacing: 0.4rem;
-  margin: 20px 0;
-  color: #5a2d0c;
+  letter-spacing: 0.1rem;
+  margin-top: 20px;
+  color: rgba(0, 0, 0, 0.9);
   word-break: break-word;
   padding: 0 10px;
+  font-family: auto;
+}
+
+.game-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  background-color: #faeadd;
 }
 
 .hint-text {
@@ -220,40 +237,49 @@ body.mobile-ui {
   padding: 0 15px;
 }
 
-/* Teclado */
+/* Teclado de 3 filas */
 .keyboard-container {
-  margin: 15px 0;
+  width: 90%;
+  margin: 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 
 .keyboard-row {
   display: flex;
   justify-content: center;
-  gap: 4px;
-  margin: 5px 0;
+  gap: 3px;
 }
 
 #keyboard button {
   flex: 1;
-  min-width: 45px;
-  height: 50px;
-  font-size: 1.3rem;
+  min-width: 9%;
+  max-width: 11%;
+  height: 45px;
+  font-size: 1.1rem;
+  padding: 8px 2px;
   border: 2px solid #8B4513;
-  border-radius: 8px;
+  border-radius: 6px;
   background: white;
-  cursor: pointer;
-  transition: all 0.1s;
+}
+
+/* Ajustes para letras especiales */
+.row-3 button:nth-last-child(2) { /* Ñ */
+  min-width: 12%;
+  max-width: 14%;
 }
 
 #keyboard button.correct {
-  background: #2aa367;
+  background: #2c7953;
   color: white;
-  border-color: #228755;
+  border-color: #2c7953;
 }
 
 #keyboard button.incorrect {
-  background: #d64453;
+  background: #8f363f;
   color: white;
-  border-color: #b83744;
+  border-color: #8f363f;
 }
 
 /* Temporizador */

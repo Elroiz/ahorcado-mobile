@@ -32,8 +32,15 @@
       <div class="input-group">
         <select id="theme">
           <option value="aleatorio">🎲 Aleatorio</option>
-          <option value="fantasia">🐉 Fantasía</option>
-          <option value="medieval">🏰 Medieval</option>
+          <option value="Naturaleza">🌳 Naturaleza</option>
+          <option value="Historia y Política">🏛️ Historia/Política</option>
+          <option value="Arte y Cultura">🎨 Arte/Cultura</option>
+          <option value="Mitología y Fantasía">🐉 Mitología/Fantasía</option>
+          <option value="Ciencia y Tecnología">🔬 Ciencia/Tecnología</option>
+          <option value="Astronomía">🌌 Astronomía</option>
+          <option value="Moda y complementos">👗 Moda</option>
+          <option value="Mundo del motor">🏍️ Motor</option>
+          <option value="Deportes">⚽ Deportes</option>
         </select>
       </div>
       <div class="input-group">
@@ -73,11 +80,15 @@
   </div>
 
   <!-- Popup Palabra Secreta -->
-  <div class="overlay" id="overlay"></div>
-  <div class="popup hidden" id="word-popup">
-    <p id="current-player" class="player-turn">JUGADOR 1:</p>
-    <input type="text" id="secret-word-input" placeholder="PALABRA SECRETA" maxlength="14">
-    <button id="confirm-word" class="confirm-btn">CONFIRMAR</button>
+  <div class="popup-container hidden" id="popup-container">
+    <div class="popup">
+      <p id="current-player" class="player-turn">JUGADOR 1:</p>
+      <input type="text" id="secret-word-input" 
+            placeholder="ESCRIBE LA PALABRA SECRETA" 
+            maxlength="14"
+            autocapitalize="characters">
+      <button id="confirm-word" class="confirm-btn">COMENZAR</button>
+    </div>
   </div>
 
   <!-- Pantalla de Juego -->
