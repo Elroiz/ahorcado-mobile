@@ -203,13 +203,17 @@ body.mobile-ui {
 }
 
 /* Juego */
+.game-container {
+  height: 100%;
+}
+
 #hangman-container {
-  margin-bottom: -4px;
+  height: 35%;
 }
 
 .ahorcado {
   width: 100%;
-  height: 250px;
+  max-height: 35vh;
 }
 
 #word-display {
@@ -228,6 +232,7 @@ body.mobile-ui {
   align-items: center;
   justify-content: flex-start;
   background-color: #faeadd;
+  height: 65%;
 }
 
 .hint-text {
@@ -284,26 +289,30 @@ body.mobile-ui {
 
 /* Temporizador */
 .timer-circle {
-  width: 80px;
-  height: 80px;
-  margin: 0 auto;
+  width: 60px;
+  height: 60px;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 100;
 }
 
 .base-circle {
   fill: none;
   stroke: #eee;
-  stroke-width: 8px;
+  stroke-width: 10px; /* Más grueso */
 }
 
 .progress-circle {
   fill: none;
-  stroke: #2aa367;
-  stroke-width: 8px;
-  stroke-dasharray: 283;
-  stroke-dashoffset: 283;
-  transition: stroke-dashoffset 1s linear;
-  transform: rotate(-90deg);
-  transform-origin: 50% 50%;
+  stroke: #8f363f; /* Nuevo color */
+  stroke-width: 10px; /* Más grueso */
+  stroke-linecap: round; /* Borde redondeado */
+}
+
+/* Ocultar cuando no hay tiempo */
+.timer-circle.hidden {
+  display: none;
 }
 
 .attempts-counter {

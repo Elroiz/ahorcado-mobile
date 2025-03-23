@@ -184,6 +184,14 @@ function initializeGame() {
   resetKeyboard();
 
   if (difficultyConfig.timer > 0) startTimer();
+
+  const timerElement = document.querySelector('.timer-circle');
+  if (difficultyConfig.timer > 0) {
+    timerElement.classList.remove('hidden');
+    startTimer();
+  } else {
+    timerElement.classList.add('hidden');
+  }
 }
 
 function updateGameDisplay() {
@@ -280,24 +288,28 @@ function resetGame() {
   document.getElementById('start-screen').classList.remove('hidden');
 }
 
+// En la función startTimer:
 function startTimer() {
   const progressCircle = document.querySelector('.progress-circle');
   const circumference = 283;
   const timeLimit = DIFFICULTY_LEVELS[gameState.difficulty].timer;
-  let timeLeft = timeLimit;
   
-  progressCircle.style.strokeDashoffset = circumference;
-  
-  gameState.timer = setInterval(() => {
-    timeLeft--;
-    const progress = (timeLeft / timeLimit) * circumference;
-    progressCircle.style.strokeDashoffset = progress;
+  // Solo si hay temporizador
+  if(timeLimit > 0) {
+    let timeLeft = timeLimit;
+    progressCircle.style.strokeDashoffset = circumference;
     
-    if(timeLeft <= 0) {
-      clearInterval(gameState.timer);
-      endGame(false);
-    }
-  }, 1000);
+    gameState.timer = setInterval(() => {
+      timeLeft--;
+      const progress = (timeLeft / timeLimit) * circumference;
+      progressCircle.style.strokeDashoffset = progress;
+      
+      if(timeLeft <= 0) {
+        clearInterval(gameState.timer);
+        endGame(false);
+      }
+    }, 1000);
+  }
 }
 
 function showMobileAlert(message) {
