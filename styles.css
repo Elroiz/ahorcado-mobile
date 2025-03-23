@@ -1,55 +1,78 @@
-/* Estilos Base Móvil */
-body.mobile-ui {
-  font-family: 'MedievalSharp', cursive;
+/* Variables CSS */
+:root {
+  --primary-color: #8B4513;
+  --secondary-color: #5a2d0c;
+  --accent-color: #2aa367;
+  --text-color: #faeadd;
+  --bg-color: rgba(255, 255, 255, 0.95);
+  --shadow-color: rgba(0, 0, 0, 0.2);
+  --transition-speed: 0.3s;
+}
+
+/* Reset y Estilos Base */
+* {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
+}
+
+body.mobile-ui {
+  font-family: 'MedievalSharp', cursive;
   min-height: 100vh;
   touch-action: manipulation;
-  -webkit-user-select: none;
   user-select: none;
   font-size: 16px;
-  -webkit-text-size-adjust: none;
   text-size-adjust: none;
 }
 
 #bg-image {
-  background-image: url('img/bg.png');
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
+  background: url('img/bg.png') center/cover no-repeat;
   min-height: 100vh;
-}
-
-.hidden {
-  display: none !important;
-}
-
-/* Pantallas Principales */
-.screen {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
+  z-index: -1;
+}
+
+/* Utilidades */
+.hidden {
+  display: none !important;
+}
+
+/* Pantallas */
+.screen {
+  position: fixed;
+  inset: 0;
   overflow-y: auto;
+  transition: opacity var(--transition-speed), transform var(--transition-speed);
 }
 
-#start-screen {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+.screen:not(.active) {
+  pointer-events: none;
+  visibility: hidden;
 }
 
-#config-single {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+.screen.active {
+  visibility: visible;
+  pointer-events: all;
 }
 
+.screen.hidden {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+/* Contenedores de Pantalla */
+#start-screen,
+#config-single,
 #config-multi {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .start-content {
@@ -59,12 +82,12 @@ body.mobile-ui {
 
 .title {
   font-size: 2.8rem;
-  color: #5a2d0c;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  color: var(--secondary-color);
+  text-shadow: 2px 2px 4px var(--shadow-color);
   margin: 20px 0;
 }
 
-/* Botones Modo Juego */
+/* Botones */
 .mode-buttons {
   display: flex;
   flex-direction: column;
@@ -73,29 +96,52 @@ body.mobile-ui {
   margin: 0 auto;
 }
 
-.mode-btn {
-  padding: 20px;
-  font-size: 1.4rem;
-  background: #8B4513;
-  color: white;
+.mode-btn,
+.confirm-btn,
+.difficulty-btn,
+.restart-btn {
+  padding: 15px;
+  font-size: 1.2rem;
   border: none;
-  border-radius: 12px;
+  border-radius: 10px;
   cursor: pointer;
   transition: transform 0.1s;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 8px var(--shadow-color);
 }
 
-.mode-btn:active {
-  transform: scale(0.95);
+.mode-btn {
+  background: var(--primary-color);
+  color: var(--text-color);
+}
+
+.confirm-btn {
+  background: var(--accent-color);
+  color: var(--text-color);
+  width: 100%;
+  margin-top: 10px;
+}
+
+.difficulty-btn {
+  background: #f0dec4;
+  color: var(--secondary-color);
+  border: 2px solid var(--primary-color);
+  font-size: 1rem;
+}
+
+.difficulty-btn.selected {
+  background: var(--primary-color);
+  color: var(--text-color);
+  border-color: #6B3410;
+  box-shadow: inset 0 2px 4px var(--shadow-color);
 }
 
 /* Configuración */
 .config-container {
-  background: rgba(255, 255, 255, 0.95);
+  background: var(--bg-color);
   padding: 20px;
   border-radius: 15px;
   margin: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px var(--shadow-color);
 }
 
 .input-group {
@@ -107,11 +153,10 @@ body.mobile-ui {
   width: 100%;
   padding: 15px;
   font-size: 1.1rem;
-  border: 2px solid #8B4513;
+  border: 2px solid var(--primary-color);
   border-radius: 10px;
   background: white;
   text-align: center;
-  box-sizing: border-box;
 }
 
 /* Botones de Dificultad */
@@ -122,35 +167,10 @@ body.mobile-ui {
   margin-top: 12px;
 }
 
-.difficulty-btn {
-  padding: 12px;
-  border: 2px solid #8B4513;
-  border-radius: 8px;
-  background: #f0dec4;
-  color: #5a2d0c;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.difficulty-btn.selected {
-  background: #8B4513;
-  color: white;
-  border-color: #6B3410;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.difficulty-btn:active {
-  transform: scale(0.95);
-}
-
 /* Popups */
 .popup-container {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   background: rgba(0, 0, 0, 0.7);
   display: flex;
   justify-content: center;
@@ -165,7 +185,7 @@ body.mobile-ui {
   width: 85%;
   max-width: 400px;
   text-align: center;
-  animation: popIn 0.3s ease-out;
+  animation: popIn var(--transition-speed) ease-out;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -177,181 +197,207 @@ body.mobile-ui {
   to { transform: scale(1); opacity: 1; }
 }
 
-.popup.visible {
-  display: block;
-}
-
 #secret-word-input {
   width: 90%;
   padding: 15px;
   margin: 15px 0;
   font-size: 1.2rem;
-  border: 2px solid #8B4513;
+  border: 2px solid var(--primary-color);
   border-radius: 10px;
   text-transform: uppercase;
 }
 
-.confirm-btn {
-  background: #2aa367;
-  color: #faeadd;
-  padding: 15px;
-  border: none;
-  border-radius: 10px;
-  font-size: 1.2rem;
-  width: 100%;
-  margin-top: 10px;
-}
-
 /* Juego */
 .game-container {
-  height: 100%;
-}
-
-#hangman-container {
-  height: 35%;
-}
-
-.ahorcado {
+  position: relative;
   width: 100%;
-  max-height: 35vh;
-}
-
-#word-display {
-  font-size: 1.8rem;
-  letter-spacing: 0.1rem;
-  margin-top: 20px;
-  color: rgba(0, 0, 0, 0.9);
-  word-break: break-word;
-  padding: 0 10px;
-  font-family: auto;
-}
-
-.game-info {
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  background-color: #faeadd;
-  height: 65%;
+}
+
+#game-screen {
+  background: var(--bg-color);
+}
+
+.timer-circle {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 60px;
+  height: 60px;
+  z-index: 2;
+}
+
+#hangman-container {
+  position: relative;
+  width: 100%;
+  height: 50vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#hangman-container img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity var(--transition-speed) ease-in-out;
+  object-fit: fill;
+}
+
+#hangman-container img.active {
+  opacity: 1;
+  z-index: 1;
+}
+
+.word-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin: 20px 0;
+}
+
+.hint-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: transform 0.2s;
+  display: none;
+  color: var(--secondary-color);
+}
+
+.hint-button:hover {
+  transform: scale(1.1);
+  color: var(--primary-color);
+}
+
+.hint-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.hint-icon {
+  width: 24px;
+  height: 24px;
+  display: block;
+}
+
+#word-display {
+  font-size: 2rem;
+  letter-spacing: 5px;
+  text-align: center;
+  color: var(--secondary-color);
 }
 
 .hint-text {
   font-size: 1.1rem;
-  color: #5a2d0c;
+  color: var(--secondary-color);
   margin: 10px 0;
-  padding: 0 15px;
+  text-align: center;
+  min-height: 1.5rem;
 }
 
-/* Teclado de 3 filas */
-.keyboard-container {
-  width: 90%;
-  margin: 10px 0;
+.game-info {
+  width: 100%;
+  padding: 1rem;
+  background-color: var(--color-bg);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-md);
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 1rem;
+  margin-top: auto;
+}
+
+.keyboard-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 20px 0;
 }
 
 .keyboard-row {
   display: flex;
   justify-content: center;
-  gap: 3px;
+  gap: 5px;
 }
 
 #keyboard button {
-  flex: 1;
-  min-width: 9%;
-  max-width: 11%;
-  height: 45px;
-  font-size: 1.1rem;
-  padding: 8px 2px;
-  border: 2px solid #8B4513;
-  border-radius: 6px;
+  width: 40px;
+  height: 40px;
+  font-size: 1.2rem;
+  border: 2px solid var(--primary-color);
+  border-radius: 8px;
   background: white;
-}
-
-/* Ajustes para letras especiales */
-.row-3 button:nth-last-child(2) { /* Ñ */
-  min-width: 12%;
-  max-width: 14%;
+  color: var(--secondary-color);
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
 #keyboard button.correct {
-  background: #2c7953;
+  background: var(--accent-color);
   color: white;
-  border-color: #2c7953;
+  border-color: var(--accent-color);
 }
 
 #keyboard button.incorrect {
-  background: #8f363f;
+  background: #ff4444;
   color: white;
-  border-color: #8f363f;
+  border-color: #ff4444;
 }
 
-/* Temporizador */
-.timer-circle {
-  width: 60px;
-  height: 60px;
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  z-index: 100;
+.timer-circle svg {
+  transform: rotate(-90deg);
+}
+
+.base-circle,
+.progress-circle {
+  fill: none;
+  stroke-width: 4;
 }
 
 .base-circle {
-  fill: none;
-  stroke: #eee;
-  stroke-width: 10px; /* Más grueso */
+  stroke: #ddd;
 }
 
 .progress-circle {
-  fill: none;
-  stroke: #8f363f; /* Nuevo color */
-  stroke-width: 10px; /* Más grueso */
-  stroke-linecap: round; /* Borde redondeado */
+  stroke: var(--accent-color);
+  stroke-linecap: round;
+  transition: stroke-dashoffset var(--transition-speed);
 }
 
-/* Ocultar cuando no hay tiempo */
-.timer-circle.hidden {
-  display: none;
-}
-
-.attempts-counter {
-  font-size: 1.3rem;
-  color: #5a2d0c;
-  text-align: center;
-  margin: 15px 0;
-}
-
+/* Botón Reiniciar */
 .restart-btn {
-  background: #8B4513;
-  color: white;
-  padding: 15px;
-  width: 100%;
-  max-width: 200px;
-  border: none;
-  border-radius: 10px;
-  font-size: 1.2rem;
-  margin: 15px auto;
-  display: block;
+  background: var(--primary-color);
+  color: var(--text-color);
+  padding: 12px 25px;
+  font-size: 1.1rem;
+  margin-top: 20px;
 }
 
 /* Alertas Móviles */
 .mobile-alert {
   position: fixed;
-  top: 30px;
+  bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.9);
-  color: white;
-  padding: 12px 25px;
-  border-radius: 25px;
-  font-size: 1rem;
-  z-index: 2000;
-  animation: slideIn 0.3s ease-out;
-  white-space: nowrap;
+  background: var(--bg-color);
+  padding: 15px 25px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px var(--shadow-color);
+  animation: slideIn var(--transition-speed) ease-out;
+  z-index: 1000;
 }
 
 @keyframes slideIn {
-  from { top: -50px; }
-  to { top: 30px; }
+  from { transform: translate(-50%, 100%); }
+  to { transform: translate(-50%, 0); }
 }

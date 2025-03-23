@@ -1,8 +1,9 @@
+// Constantes y Configuración
 const DIFFICULTY_LEVELS = {
-  0: { name: "Fácil", fails: 8, timer: 0 },
-  25: { name: "Normal", fails: 6, timer: 35 },
-  50: { name: "Difícil", fails: 4, timer: 25 },
-  100: { name: "Extremo", fails: 3, timer: 15 }
+  0: { name: "Fácil", fails: 10, timer: 0, startImage: 0 },
+  25: { name: "Normal", fails: 8, timer: 35, startImage: 2 },
+  50: { name: "Difícil", fails: 6, timer: 25, startImage: 4 },
+  100: { name: "Extremo", fails: 4, timer: 15, startImage: 6 }
 };
 
 const WORD_LIST = [
@@ -35,7 +36,8 @@ const WORD_LIST = [
   { word: "SANCION", hint: "Castigo impuesto por una falta", theme: "Deportes" }
 ];
 
-let gameState = {
+// Estado del juego
+const gameState = {
   mode: null,
   players: [],
   difficulty: 50,
@@ -45,113 +47,117 @@ let gameState = {
   attemptsLeft: 0,
   timer: null,
   timeLeft: 0,
-  hint: ""
+  hint: "",
+  gameActive: true,
+  gameEnded: false
 };
 
-// Gestos táctiles
-document.addEventListener('touchstart', handleTouchStart, false);
-document.addEventListener('touchend', handleTouchEnd, false);
-
+// Gestión de eventos táctiles
 let touchStartX = 0;
 let touchStartY = 0;
 
-function handleTouchStart(e) {
+const handleTouchStart = e => {
   touchStartX = e.touches[0].clientX;
   touchStartY = e.touches[0].clientY;
-}
+};
 
-function handleTouchEnd(e) {
-  const touchEndX = e.changedTouches[0].clientX;
-  const touchEndY = e.changedTouches[0].clientY;
+const handleTouchEnd = e => {
+  const { clientX: touchEndX, clientY: touchEndY } = e.changedTouches[0];
   const deltaX = touchEndX - touchStartX;
   const deltaY = touchEndY - touchStartY;
 
-  if (Math.abs(deltaX) > 50 && Math.abs(deltaY) < 30) {
-    if (deltaX > 0 && gameState.secretWord) {
-      resetGame();
-    }
+  if (Math.abs(deltaX) > 50 && Math.abs(deltaY) < 30 && 
+      !document.getElementById('game-screen').classList.contains('hidden')) {
+    if (deltaX > 0) resetGame();
   }
-}
+};
 
+// Inicialización del juego
 document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('start-screen').classList.remove('hidden');
+  
+  // Event Listeners
   document.getElementById('single-player-btn').addEventListener('click', () => showConfig('single'));
   document.getElementById('multi-player-btn').addEventListener('click', () => showConfig('multi'));
   document.getElementById('start-single-game').addEventListener('click', startSingleGame);
-  document.getElementById('next-multi').addEventListener('click', function() {
-    const player1 = document.getElementById('multi-player1').value.trim();
-    const player2 = document.getElementById('multi-player2').value.trim();
-    
-    if (!player1 || !player2) {
-      showMobileAlert('¡Nombres requeridos!');
-      return;
-    }
-    
-    gameState.players = [player1, player2];
-    showWordPopup(); // Esto ahora mostrará el popup correctamente
-  });
+  document.getElementById('next-multi').addEventListener('click', handleMultiPlayerSetup);
   document.getElementById('confirm-word').addEventListener('click', startMultiGame);
   document.getElementById('restart-button').addEventListener('click', resetGame);
-
+  
+  // Gestos táctiles
+  document.addEventListener('touchstart', handleTouchStart, false);
+  document.addEventListener('touchend', handleTouchEnd, false);
+  
+  // Configuración inicial
   setupDifficultyButtons();
-
   document.querySelector('.difficulty-btn[data-difficulty="25"]').click();
 });
 
-function showConfig(mode) {
-  document.getElementById('start-screen').classList.add('hidden');
-  document.getElementById(`config-${mode}`).classList.remove('hidden');
-}
+// Funciones de UI
+const showConfig = mode => {
+  document.querySelectorAll('.screen').forEach(screen => {
+    screen.classList.remove('active', 'hidden');
+  });
+  
+  const configScreen = document.getElementById(`config-${mode}`);
+  configScreen.classList.remove('hidden');
+  requestAnimationFrame(() => configScreen.classList.add('active'));
+};
 
-function setupDifficultyButtons() {
+const setupDifficultyButtons = () => {
   document.querySelectorAll('.difficulty-btn').forEach(button => {
-    button.addEventListener('click', (e) => {
-      // Remover selección anterior
+    button.addEventListener('click', e => {
       document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.remove('selected'));
-      
-      // Seleccionar nuevo botón
-      const selectedButton = e.target;
-      selectedButton.classList.add('selected');
-      
-      // Actualizar dificultad
-      gameState.difficulty = parseInt(selectedButton.dataset.difficulty);
+      e.target.classList.add('selected');
+      gameState.difficulty = parseInt(e.target.dataset.difficulty);
     });
   });
-}
+};
 
-function startSingleGame() {
+// Lógica del juego
+const startSingleGame = () => {
   const playerName = document.getElementById('player1-name').value.trim();
   const theme = document.getElementById('theme').value;
   
   if (!playerName) return showMobileAlert('¡Ingresa tu nombre!');
   
-  const filteredWords = theme === 'aleatorio' ? WORD_LIST : WORD_LIST.filter(word => word.theme === theme);
+  const filteredWords = theme === 'aleatorio' ? 
+    WORD_LIST : 
+    WORD_LIST.filter(word => word.theme === theme);
+    
   if (filteredWords.length === 0) return showMobileAlert('No hay palabras disponibles');
   
   const selectedWord = filteredWords[Math.floor(Math.random() * filteredWords.length)];
   gameState.players = [playerName];
   gameState.secretWord = selectedWord.word.toUpperCase();
   gameState.hint = selectedWord.hint;
-  
   initializeGame();
-}
+};
 
-function setupMultiplayerWord() {
-  const player1 = document.getElementById('multi-player1').value.trim();
-  const player2 = document.getElementById('multi-player2').value.trim();
+const handleMultiPlayerSetup = () => {
+  const [player1, player2] = [
+    document.getElementById('multi-player1').value.trim(),
+    document.getElementById('multi-player2').value.trim()
+  ];
   
-  if (!player1 || !player2) return showMobileAlert('Nombres requeridos');
+  if (!player1 || !player2) {
+    showMobileAlert('¡Nombres requeridos!');
+    return;
+  }
   
   gameState.players = [player1, player2];
   showWordPopup();
-}
+};
 
-function showWordPopup() {
-  document.getElementById('popup-container').classList.remove('hidden');
+const showWordPopup = () => {
+  const popup = document.getElementById('popup-container');
+  const input = document.getElementById('secret-word-input');
+  popup.classList.remove('hidden');
   document.getElementById('current-player').textContent = `${gameState.players[0]}, escribe la palabra:`;
-  document.getElementById('secret-word-input').focus();
-}
+  input.focus();
+};
 
-function startMultiGame() {
+const startMultiGame = () => {
   const secretWord = document.getElementById('secret-word-input').value.trim().toUpperCase();
   
   if (!secretWord) {
@@ -167,48 +173,102 @@ function startMultiGame() {
   gameState.secretWord = secretWord;
   hideOverlay();
   initializeGame();
-}
+};
 
-function initializeGame() {
+const initializeGame = () => {
   const difficultyConfig = DIFFICULTY_LEVELS[gameState.difficulty];
-  gameState.attemptsLeft = difficultyConfig.fails;
-  gameState.guessedLetters = Array(gameState.secretWord.length).fill('_');
-  gameState.wrongLetters = [];
-  gameState.timeLeft = difficultyConfig.timer;
-
-  document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
-  document.getElementById('game-screen').classList.remove('hidden');
   
-  updateHangmanImage();
+  // Inicializar estado del juego
+  Object.assign(gameState, {
+    attemptsLeft: difficultyConfig.fails,
+    guessedLetters: Array(gameState.secretWord.length).fill('_'),
+    wrongLetters: [],
+    timeLeft: difficultyConfig.timer,
+    gameActive: true,
+    gameEnded: false
+  });
+
+  // Actualizar UI
+  document.querySelectorAll('.screen').forEach(screen => {
+    screen.classList.add('hidden', 'active');
+  });
+
+  const gameScreen = document.getElementById('game-screen');
+  gameScreen.classList.remove('hidden');
+  requestAnimationFrame(() => gameScreen.classList.add('active'));
+
+  updateHangmanImage(difficultyConfig.startImage);
   updateGameDisplay();
   resetKeyboard();
+  setupHintButton();
 
-  if (difficultyConfig.timer > 0) startTimer();
-
-  const timerElement = document.querySelector('.timer-circle');
+  // Configurar temporizador
+  const timerCircle = document.querySelector('.timer-circle');
   if (difficultyConfig.timer > 0) {
-    timerElement.classList.remove('hidden');
     startTimer();
+    timerCircle.classList.remove('hidden');
   } else {
-    timerElement.classList.add('hidden');
+    timerCircle.classList.add('hidden');
   }
-}
+};
 
-function updateGameDisplay() {
-  document.getElementById('word-display').textContent = gameState.guessedLetters.join(' ');
-  document.getElementById('remaining-attempts').textContent = gameState.attemptsLeft;
-  document.getElementById('hint-display').textContent = gameState.mode === 'single' ? `Pista: ${gameState.hint}` : '';
-}
+const setupHintButton = () => {
+  const hintButton = document.getElementById('hint-button');
+  const hintDisplay = document.getElementById('hint-display');
+  
+  // Ocultar pista y botón por defecto
+  hintDisplay.textContent = '';
+  hintButton.style.display = 'none';
+  
+  // Solo mostrar el botón de pista en modo individual y dificultades Fácil y Normal
+  if (gameState.mode === 'single' && (gameState.difficulty === 0 || gameState.difficulty === 25)) {
+    hintButton.style.display = 'block';
+    hintButton.disabled = false;
+    hintButton.style.opacity = '1';
+    
+    // Remover el event listener anterior si existe
+    hintButton.removeEventListener('click', handleHintClick);
+    // Añadir el nuevo event listener
+    hintButton.addEventListener('click', handleHintClick);
+  }
+};
 
-function resetKeyboard() {
+const handleHintClick = () => {
+  const hintDisplay = document.getElementById('hint-display');
+  const hintButton = document.getElementById('hint-button');
+  
+  hintDisplay.textContent = gameState.hint;
+  hintButton.disabled = true;
+  hintButton.style.opacity = '0.5';
+};
+
+const updateGameDisplay = () => {
+  const wordDisplay = document.getElementById('word-display');
+  
+  wordDisplay.textContent = gameState.guessedLetters.join(' ');
+  
+  // Actualizar teclado
+  document.querySelectorAll('#keyboard button').forEach(button => {
+    const letter = button.getAttribute('data-letter');
+    if (gameState.wrongLetters.includes(letter)) {
+      button.classList.add('incorrect');
+      button.disabled = true;
+    } else if (gameState.guessedLetters.includes(letter)) {
+      button.classList.add('correct');
+      button.disabled = true;
+    }
+  });
+};
+
+const resetKeyboard = () => {
   const keyboard = document.getElementById('keyboard');
   keyboard.innerHTML = '';
   
   const letters = 'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ'.split('');
   const rows = [
-    letters.slice(0, 9),   
-    letters.slice(9, 18),  
-    letters.slice(18, 27)  
+    letters.slice(0, 9),
+    letters.slice(9, 18),
+    letters.slice(18, 27)
   ];
 
   rows.forEach((row, index) => {
@@ -219,7 +279,7 @@ function resetKeyboard() {
       const button = document.createElement('button');
       button.textContent = letter;
       button.dataset.letter = letter;
-      button.addEventListener('touchstart', (e) => {
+      button.addEventListener('touchstart', e => {
         e.preventDefault();
         if (!button.disabled) handleLetter(letter);
       });
@@ -227,101 +287,162 @@ function resetKeyboard() {
     });
     keyboard.appendChild(rowDiv);
   });
-}
+};
 
-function handleLetter(letter) {
+const handleLetter = letter => {
   const button = document.querySelector(`button[data-letter="${letter}"]`);
   button.disabled = true;
-  
+
   if (gameState.secretWord.includes(letter)) {
     button.classList.add('correct');
-    gameState.secretWord.split('').forEach((char, i) => {
-      if (char === letter) gameState.guessedLetters[i] = letter;
+    gameState.secretWord.split('').forEach((char, index) => {
+      if (char === letter) gameState.guessedLetters[index] = letter;
     });
+    
+    // Reiniciar el temporizador cuando se acierta una letra
+    const difficultyConfig = DIFFICULTY_LEVELS[gameState.difficulty];
+    if (difficultyConfig.timer > 0) {
+      if (gameState.timer) {
+        cancelAnimationFrame(gameState.timer);
+      }
+      gameState.timeLeft = difficultyConfig.timer;
+      startTimer();
+    }
   } else {
     button.classList.add('incorrect');
     gameState.wrongLetters.push(letter);
     gameState.attemptsLeft--;
     updateHangmanImage();
   }
-  
-  checkGameStatus();
+
   updateGameDisplay();
-}
+  checkGameStatus();
+};
 
-function updateHangmanImage() {
-  const errors = gameState.wrongLetters.length;
-  document.getElementById('hangman-container').innerHTML = `
-    <img src="img/ahorcado_${String(errors).padStart(2, '0')}.png" class="ahorcado">
-  `;
-}
+const updateHangmanImage = () => {
+  const hangmanContainer = document.getElementById('hangman-container');
+  const difficultyConfig = DIFFICULTY_LEVELS[gameState.difficulty];
+  const currentImage = difficultyConfig.startImage + 
+    (difficultyConfig.fails - gameState.attemptsLeft);
 
-function checkGameStatus() {
+  // Crear la nueva imagen
+  const newImage = document.createElement('img');
+  newImage.src = `img/ahorcado_${String(currentImage).padStart(2, '0')}.png`;
+  newImage.classList.add('ahorcado');
+  newImage.alt = `Estado del ahorcado - Intento ${currentImage}`;
+
+  // Agregar la nueva imagen al contenedor
+  hangmanContainer.appendChild(newImage);
+
+  // Si hay una imagen anterior, iniciar la transición
+  const currentImageElement = hangmanContainer.querySelector('img.active');
+  if (currentImageElement) {
+    // Mostrar la nueva imagen gradualmente
+    requestAnimationFrame(() => {
+      newImage.classList.add('active');
+    });
+
+    // Eliminar la imagen anterior después de la transición
+    setTimeout(() => {
+      currentImageElement.classList.remove('active');
+      setTimeout(() => currentImageElement.remove(), 500);
+    }, 500);
+  } else {
+    // Si no hay imagen anterior, simplemente mostrar la nueva
+    newImage.classList.add('active');
+  }
+};
+
+const checkGameStatus = () => {
   if (!gameState.guessedLetters.includes('_')) {
     endGame(true);
-  } else if (gameState.attemptsLeft <= 0 || gameState.timeLeft <= 0) {
+  } else if (gameState.attemptsLeft <= 0) {
     endGame(false);
   }
-}
+};
 
-function endGame(win) {
-  clearInterval(gameState.timer);
-  const message = win ? `¡Victoria! ${gameState.secretWord}` : `¡Derrota! ${gameState.secretWord}`;
+const endGame = win => {
+  gameState.gameEnded = true;
+  gameState.gameActive = false;
+  
+  if (gameState.timer) {
+    cancelAnimationFrame(gameState.timer);
+  }
+  
+  const message = win ? 
+    `¡Felicidades ${gameState.players[0]}! Has ganado.` :
+    `¡Game Over! La palabra era: ${gameState.secretWord}`;
+    
   showMobileAlert(message);
-  resetGame();
-}
+  
+  // Si ganó, reiniciar el temporizador para la siguiente palabra
+  if (win) {
+    const difficultyConfig = DIFFICULTY_LEVELS[gameState.difficulty];
+    gameState.timeLeft = difficultyConfig.timer;
+    if (difficultyConfig.timer > 0) {
+      startTimer();
+    }
+  }
+};
 
-function resetGame() {
-  gameState = {
-    mode: null,
-    players: [],
-    secretWord: "",
-    guessedLetters: [],
-    wrongLetters: [],
-    attemptsLeft: 0,
-    timer: null,
-    timeLeft: 0,
-    hint: ""
+const resetGame = () => {
+  gameState.gameActive = true;
+  gameState.gameEnded = false;
+  
+  if (gameState.timer) {
+    cancelAnimationFrame(gameState.timer);
+  }
+  
+  document.querySelectorAll('.screen').forEach(screen => {
+    screen.classList.add('hidden', 'active');
+  });
+  
+  document.getElementById('start-screen').classList.remove('hidden');
+  requestAnimationFrame(() => document.getElementById('start-screen').classList.add('active'));
+};
+
+const startTimer = () => {
+  const startTime = performance.now();
+  const duration = gameState.timeLeft * 1000;
+  
+  const updateTimer = timestamp => {
+    if (!gameState.gameActive) return;
+    
+    const elapsed = timestamp - startTime;
+    const remaining = Math.max(0, duration - elapsed);
+    
+    if (remaining === 0) {
+      endGame(false);
+      return;
+    }
+    
+    const progress = (remaining / duration) * 100;
+    const circle = document.querySelector('.progress-circle');
+    const radius = circle.r.baseVal.value;
+    const circumference = radius * 2 * Math.PI;
+    const offset = circumference - (progress / 100) * circumference;
+    
+    circle.style.strokeDasharray = `${circumference} ${circumference}`;
+    circle.style.strokeDashoffset = offset;
+    
+    gameState.timer = requestAnimationFrame(updateTimer);
   };
   
-  document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
-  document.getElementById('start-screen').classList.remove('hidden');
-}
+  gameState.timer = requestAnimationFrame(updateTimer);
+};
 
-// En la función startTimer:
-function startTimer() {
-  const progressCircle = document.querySelector('.progress-circle');
-  const circumference = 283;
-  const timeLimit = DIFFICULTY_LEVELS[gameState.difficulty].timer;
-  
-  // Solo si hay temporizador
-  if(timeLimit > 0) {
-    let timeLeft = timeLimit;
-    progressCircle.style.strokeDashoffset = circumference;
-    
-    gameState.timer = setInterval(() => {
-      timeLeft--;
-      const progress = (timeLeft / timeLimit) * circumference;
-      progressCircle.style.strokeDashoffset = progress;
-      
-      if(timeLeft <= 0) {
-        clearInterval(gameState.timer);
-        endGame(false);
-      }
-    }, 1000);
-  }
-}
-
-function showMobileAlert(message) {
+// Utilidades
+const showMobileAlert = message => {
   const alert = document.createElement('div');
   alert.className = 'mobile-alert';
   alert.textContent = message;
   document.body.appendChild(alert);
   
-  setTimeout(() => alert.remove(), 2000);
-}
+  setTimeout(() => {
+    alert.remove();
+  }, 3000);
+};
 
-function hideOverlay() {
+const hideOverlay = () => {
   document.getElementById('popup-container').classList.add('hidden');
-  document.getElementById('secret-word-input').value = '';
-}
+};
