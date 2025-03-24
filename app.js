@@ -6,6 +6,8 @@ const DIFFICULTY_LEVELS = {
   100: { name: "Extremo", fails: 4, timer: 15, startImage: 6 }
 };
 
+const DIFFICULTY_ORDER = [0, 25, 50, 100];
+
 const WORD_LIST = [
   { word: "BOSQUE", hint: "Área densamente poblada de árboles", theme: "Naturaleza" },
   { word: "MONTAÑA", hint: "Elevación natural de terreno", theme: "Naturaleza" },
@@ -89,8 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('touchend', handleTouchEnd, false);
   
   // Configuración inicial
-  setupDifficultyButtons();
-  document.querySelector('.difficulty-btn[data-difficulty="25"]').click();
+  setupDifficultySlider();
 });
 
 // Funciones de UI
@@ -104,14 +105,51 @@ const showConfig = mode => {
   requestAnimationFrame(() => configScreen.classList.add('active'));
 };
 
-const setupDifficultyButtons = () => {
-  document.querySelectorAll('.difficulty-btn').forEach(button => {
-    button.addEventListener('click', e => {
-      document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.remove('selected'));
-      e.target.classList.add('selected');
-      gameState.difficulty = parseInt(e.target.dataset.difficulty);
-    });
+const setupDifficultySlider = () => {
+  const leftBtns = document.querySelectorAll('.left-btn');
+  const rightBtns = document.querySelectorAll('.right-btn');
+  const tracks = document.querySelectorAll('.difficulty-track');
+  const slides = document.querySelectorAll('.difficulty-slide');
+  
+  let currentIndex = 0;
+  let isAnimating = false;
+  
+  const updateDifficulty = (track, direction) => {
+    if (isAnimating) return;
+    
+    const totalSlides = track.children.length;
+    const newIndex = (currentIndex + direction + totalSlides) % totalSlides;
+    
+    if (newIndex === currentIndex) return;
+    
+    isAnimating = true;
+    currentIndex = newIndex;
+    
+    track.style.transition = 'transform 0.5s ease-in-out';
+    track.style.transform = `translateX(-${currentIndex * 100}%)`;
+    
+    // Actualizar el estado del juego
+    const currentSlide = track.children[currentIndex];
+    gameState.difficulty = parseInt(currentSlide.dataset.difficulty);
+    
+    // Limpiar después de la animación
+    track.addEventListener('transitionend', () => {
+      isAnimating = false;
+      track.style.transition = 'none';
+    }, { once: true });
+  };
+  
+  leftBtns.forEach((btn, index) => {
+    btn.addEventListener('click', () => updateDifficulty(tracks[index], -1));
   });
+  
+  rightBtns.forEach((btn, index) => {
+    btn.addEventListener('click', () => updateDifficulty(tracks[index], 1));
+  });
+  
+  // Inicializar el estado del juego con la dificultad por defecto
+  const defaultSlide = slides[0];
+  gameState.difficulty = parseInt(defaultSlide.dataset.difficulty);
 };
 
 // Lógica del juego
@@ -178,6 +216,7 @@ const startMultiGame = () => {
 };
 
 const initializeGame = () => {
+  setupDifficultySlider();
   const difficultyConfig = DIFFICULTY_LEVELS[gameState.difficulty];
   
   // Inicializar estado del juego

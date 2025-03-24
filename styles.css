@@ -90,7 +90,7 @@ body.mobile-ui {
 
 #single-player-title,
 #multi-player-title {
-  font-size: 2.8rem;
+  font-size: 1.8rem;
   color: var(--secondary-color);
   text-shadow: 2px 2px 4px var(--shadow-color);
   margin: 20px 0;
@@ -117,7 +117,6 @@ body.mobile-ui {
 
 .mode-btn,
 .confirm-btn,
-.difficulty-btn,
 .restart-btn {
   padding: 15px;
   font-size: 1.3rem;
@@ -125,7 +124,22 @@ body.mobile-ui {
   cursor: pointer;
   transition: all 0.2s ease;
   font-family: 'Bubblegum Sans', cursive;
-  background: url('img/button.png') center/contain no-repeat;
+  background: url('img/button_01.png') center/contain no-repeat;
+  color: var(--text-color);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+  filter: drop-shadow(3px 8px 2px black) saturate(0.6);
+}
+
+.difficulty-btn {
+  padding: 15px;
+  font-size: 1.3rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Bubblegum Sans', cursive;
+  background: url('img/button_02.png') center/contain no-repeat;
   color: var(--text-color);
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
   position: relative;
@@ -135,15 +149,15 @@ body.mobile-ui {
 
 .mode-btn:active,
 .confirm-btn:active,
-.difficulty-btn:active,
-.restart-btn:active {
+.restart-btn:active,
+.difficulty-btn:active {
   transform: scale(0.95);
 }
 
 .mode-btn::after,
 .confirm-btn::after,
-.difficulty-btn::after,
-.restart-btn::after {
+.restart-btn::after,
+.difficulty-btn::after {
   content: '';
   position: absolute;
   top: 0;
@@ -423,4 +437,165 @@ body.mobile-ui {
 @keyframes slideIn {
   from { transform: translate(-50%, 100%); }
   to { transform: translate(-50%, 0); }
+}
+
+/* Slider de Dificultad */
+.difficulty-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.nav-btn {
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: none;
+  background: url('img/left.png') center/contain no-repeat;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+}
+
+.nav-btn.right-btn {
+  background-image: url('img/right.png');
+}
+
+.nav-btn:hover {
+  transform: scale(1.1);
+}
+
+.nav-btn:active {
+  transform: scale(0.95);
+}
+
+.difficulty-slider {
+  width: 200px;
+  overflow: hidden;
+  position: relative;
+}
+
+.difficulty-track {
+  display: flex;
+  transition: transform 0.5s ease-in-out;
+  width: 100%;
+}
+
+.difficulty-slide {
+  flex: 0 0 100%;
+  min-width: 100%;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: url('img/button_02.png') center/contain no-repeat;
+  font-family: 'Bubblegum Sans', cursive;
+  font-size: 1.2rem;
+  color: var(--text-color);
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
+  user-select: none;
+  pointer-events: none;
+}
+
+.difficulty-display {
+  min-width: 120px;
+  height: 48px;
+  padding: 0 1rem;
+  border: none;
+  background: url('img/button_02.png') center/contain no-repeat;
+  cursor: pointer;
+  font-family: 'Bubblegum Sans', cursive;
+  font-size: 1.2rem;
+  color: var(--text-color);
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
+  position: relative;
+  z-index: 1;
+  transition: transform 0.3s ease;
+}
+
+.difficulty-display.slide-left {
+  animation: slideLeft 0.3s ease forwards;
+}
+
+.difficulty-display.slide-right {
+  animation: slideRight 0.3s ease forwards;
+}
+
+.difficulty-display.slide-in-left {
+  animation: slideInLeft 0.3s ease forwards;
+}
+
+.difficulty-display.slide-in-right {
+  animation: slideInRight 0.3s ease forwards;
+}
+
+@keyframes slideLeft {
+  0% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+}
+
+@keyframes slideRight {
+  0% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes slideInLeft {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInRight {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.difficulty-display::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('img/button_02.png') center/contain no-repeat;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.difficulty-display:hover::after {
+  opacity: 0.8;
+}
+
+.difficulty-display:active {
+  transform: scale(0.95);
 }

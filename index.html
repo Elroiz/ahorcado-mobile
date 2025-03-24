@@ -57,13 +57,19 @@
         </select>
       </div>
       <div class="input-group">
-          <legend>DIFICULTAD</legend>
-          <div class="difficulty-buttons">
-            <button class="difficulty-btn" data-difficulty="0" aria-pressed="false">FÁCIL</button>
-            <button class="difficulty-btn" data-difficulty="25" aria-pressed="true">NORMAL</button>
-            <button class="difficulty-btn" data-difficulty="50" aria-pressed="false">DIFÍCIL</button>
-            <button class="difficulty-btn" data-difficulty="100" aria-pressed="false">EXTREMO</button>
+        <legend>DIFICULTAD</legend>
+        <div class="difficulty-container">
+          <button class="nav-btn left-btn" aria-label="Dificultad anterior"></button>
+          <div class="difficulty-slider">
+            <div class="difficulty-track">
+              <div class="difficulty-slide" data-difficulty="0">FÁCIL</div>
+              <div class="difficulty-slide" data-difficulty="25">NORMAL</div>
+              <div class="difficulty-slide" data-difficulty="50">DIFÍCIL</div>
+              <div class="difficulty-slide" data-difficulty="100">EXTREMO</div>
+            </div>
           </div>
+          <button class="nav-btn right-btn" aria-label="Siguiente dificultad"></button>
+        </div>
       </div>
       <button id="start-single-game" class="confirm-btn" aria-label="Comenzar juego individual">COMENZAR</button>
     </div>
@@ -83,11 +89,17 @@
       </div>
       <div class="input-group">
           <legend>DIFICULTAD</legend>
-          <div class="difficulty-buttons">
-            <button class="difficulty-btn" data-difficulty="0" aria-pressed="false">FÁCIL</button>
-            <button class="difficulty-btn" data-difficulty="25" aria-pressed="true">NORMAL</button>
-            <button class="difficulty-btn" data-difficulty="50" aria-pressed="false">DIFÍCIL</button>
-            <button class="difficulty-btn" data-difficulty="100" aria-pressed="false">EXTREMO</button>
+          <div class="difficulty-container">
+            <button class="nav-btn left-btn" aria-label="Dificultad anterior"></button>
+            <div class="difficulty-slider">
+              <div class="difficulty-track">
+                <div class="difficulty-slide" data-difficulty="0">FÁCIL</div>
+                <div class="difficulty-slide" data-difficulty="25">NORMAL</div>
+                <div class="difficulty-slide" data-difficulty="50">DIFÍCIL</div>
+                <div class="difficulty-slide" data-difficulty="100">EXTREMO</div>
+              </div>
+            </div>
+            <button class="nav-btn right-btn" aria-label="Siguiente dificultad"></button>
           </div>
       </div>
       <button id="next-multi" class="confirm-btn" aria-label="Continuar a la siguiente pantalla">SIGUIENTE</button>
