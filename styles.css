@@ -2,7 +2,8 @@
 :root {
   --primary-color: #8B4513;
   --secondary-color: #5a2d0c;
-  --accent-color: #2aa367;
+  --wrong-color: #b64b4b;
+  --accent-color: #187e4b;
   --text-color: #faeadd;
   --bg-color: rgba(255, 255, 255, 0.95);
   --shadow-color: rgba(0, 0, 0, 0.2);
@@ -17,7 +18,7 @@
 }
 
 body.mobile-ui {
-  font-family: 'MedievalSharp', cursive;
+  font-family: 'Bubblegum Sans', cursive;
   min-height: 100vh;
   touch-action: manipulation;
   user-select: none;
@@ -81,10 +82,28 @@ body.mobile-ui {
 }
 
 .title {
+  font-size: 1.8rem;
+  color: var(--secondary-color);
+  text-shadow: 2px 2px 4px var(--shadow-color);
+  margin: 20px 0;
+}
+
+#single-player-title,
+#multi-player-title {
   font-size: 2.8rem;
   color: var(--secondary-color);
   text-shadow: 2px 2px 4px var(--shadow-color);
   margin: 20px 0;
+  text-align: center;
+}
+
+.title-image {
+  width: 80%;
+  max-width: 400px;
+  height: auto;
+  margin-bottom: 2rem;
+  object-fit: contain;
+  filter: drop-shadow(0px 21px 6px black) saturate(0.9);
 }
 
 /* Botones */
@@ -101,38 +120,49 @@ body.mobile-ui {
 .difficulty-btn,
 .restart-btn {
   padding: 15px;
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   border: none;
-  border-radius: 10px;
   cursor: pointer;
-  transition: transform 0.1s;
-  box-shadow: 0 4px 8px var(--shadow-color);
+  transition: all 0.2s ease;
+  font-family: 'Bubblegum Sans', cursive;
+  background: url('img/button.png') center/contain no-repeat;
+  color: var(--text-color);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+  filter: drop-shadow(3px 8px 2px black) saturate(0.6);
 }
 
-.mode-btn {
-  background: var(--primary-color);
-  color: var(--text-color);
+.mode-btn:active,
+.confirm-btn:active,
+.difficulty-btn:active,
+.restart-btn:active {
+  transform: scale(0.95);
+}
+
+.mode-btn::after,
+.confirm-btn::after,
+.difficulty-btn::after,
+.restart-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(rgba(255, 255, 255, 0.2), transparent);
+  opacity: 0;
+  transition: opacity 0.2s;
 }
 
 .confirm-btn {
-  background: var(--accent-color);
-  color: var(--text-color);
   width: 100%;
   margin-top: 10px;
 }
 
-.difficulty-btn {
-  background: #f0dec4;
-  color: var(--secondary-color);
-  border: 2px solid var(--primary-color);
-  font-size: 1rem;
-}
-
 .difficulty-btn.selected {
-  background: var(--primary-color);
   color: var(--text-color);
-  border-color: #6B3410;
-  box-shadow: inset 0 2px 4px var(--shadow-color);
+  filter: drop-shadow(2px 2px 0px black) saturate(0.6);
 }
 
 /* Configuración */
@@ -163,7 +193,7 @@ body.mobile-ui {
 .difficulty-buttons {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
+  gap: 12px 8px;
   margin-top: 12px;
 }
 
@@ -292,7 +322,7 @@ body.mobile-ui {
 
 #word-display {
   font-size: 2rem;
-  letter-spacing: 5px;
+  letter-spacing: 1px;
   text-align: center;
   color: var(--secondary-color);
 }
@@ -340,6 +370,7 @@ body.mobile-ui {
   color: var(--secondary-color);
   cursor: pointer;
   transition: all 0.2s;
+  font-family: 'Bubblegum Sans', cursive;
 }
 
 #keyboard button.correct {
@@ -349,9 +380,9 @@ body.mobile-ui {
 }
 
 #keyboard button.incorrect {
-  background: #ff4444;
+  background: var(--wrong-color);
   color: white;
-  border-color: #ff4444;
+  border-color: var(--wrong-color);
 }
 
 .timer-circle svg {
@@ -374,15 +405,6 @@ body.mobile-ui {
   transition: stroke-dashoffset var(--transition-speed);
 }
 
-/* Botón Reiniciar */
-.restart-btn {
-  background: var(--primary-color);
-  color: var(--text-color);
-  padding: 12px 25px;
-  font-size: 1.1rem;
-  margin-top: 20px;
-}
-
 /* Alertas Móviles */
 .mobile-alert {
   position: fixed;
@@ -395,6 +417,7 @@ body.mobile-ui {
   box-shadow: 0 4px 12px var(--shadow-color);
   animation: slideIn var(--transition-speed) ease-out;
   z-index: 1000;
+  text-transform: uppercase;
 }
 
 @keyframes slideIn {

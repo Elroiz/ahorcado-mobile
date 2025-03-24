@@ -128,6 +128,7 @@ const startSingleGame = () => {
   if (filteredWords.length === 0) return showMobileAlert('No hay palabras disponibles');
   
   const selectedWord = filteredWords[Math.floor(Math.random() * filteredWords.length)];
+  gameState.mode = 'single';
   gameState.players = [playerName];
   gameState.secretWord = selectedWord.word.toUpperCase();
   gameState.hint = selectedWord.hint;
@@ -145,6 +146,7 @@ const handleMultiPlayerSetup = () => {
     return;
   }
   
+  gameState.mode = 'multi';
   gameState.players = [player1, player2];
   showWordPopup();
 };

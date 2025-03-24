@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="description" content="Juego del Ahorcado - Diviértete jugando solo o con amigos">
   <meta name="theme-color" content="#000000">
-  <title>El Ahorcado - Juego de Palabras</title>
+  <title>El Ahorcado - Adivina</title>
   
   <!-- Preload de recursos críticos -->
   <link rel="preload" href="styles.css" as="style">
@@ -15,7 +15,7 @@
   <!-- Fuentes optimizadas -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body class="mobile-ui">
@@ -25,10 +25,10 @@
   <!-- Pantalla Principal -->
   <div id="start-screen" class="screen active" role="main">
     <div class="start-content">
-      <h1 class="title">El Ahorcado</h1>
+      <img src="img/title.png" alt="El Ahorcado" class="title-image">
       <div class="mode-buttons">
-        <button id="single-player-btn" class="mode-btn" aria-label="Jugar modo individual">1 Jugador</button>
-        <button id="multi-player-btn" class="mode-btn" aria-label="Jugar modo multijugador">2 Jugadores</button>
+        <button id="single-player-btn" class="mode-btn" aria-label="Jugar modo individual">I JUGADOR</button>
+        <button id="multi-player-btn" class="mode-btn" aria-label="Jugar modo multijugador">II JUGADORES</button>
       </div>
     </div>
   </div>
@@ -36,36 +36,34 @@
   <!-- Configuración 1 Jugador -->
   <div id="config-single" class="screen hidden" role="dialog" aria-labelledby="single-player-title">
     <div class="config-container">
-      <h2 id="single-player-title">Modo Individual</h2>
+      <h2 id="single-player-title">MODO INDIVIDUAL</h2>
       <div class="input-group">
-        <label for="player1-name" class="sr-only">Tu nombre</label>
-        <input type="text" id="player1-name" placeholder="Tu nombre" required aria-required="true">
+        <label for="player1-name" class="sr-only">TU NOMBRE</label>
+        <input type="text" id="player1-name" placeholder="TU NOMBRE" required aria-required="true">
       </div>
       <div class="input-group">
-        <label for="theme" class="sr-only">Tema</label>
+        <label for="theme" class="sr-only">TEMA</label>
         <select id="theme" aria-label="Selecciona un tema">
-          <option value="aleatorio">🎲 Aleatorio</option>
-          <option value="Naturaleza">🌳 Naturaleza</option>
-          <option value="Historia y Política">🏛️ Historia/Política</option>
-          <option value="Arte y Cultura">🎨 Arte/Cultura</option>
-          <option value="Mitología y Fantasía">🐉 Mitología/Fantasía</option>
-          <option value="Ciencia y Tecnología">🔬 Ciencia/Tecnología</option>
-          <option value="Astronomía">🌌 Astronomía</option>
-          <option value="Moda y complementos">👗 Moda</option>
-          <option value="Mundo del motor">🏍️ Motor</option>
-          <option value="Deportes">⚽ Deportes</option>
+          <option value="aleatorio">🎲 ALEATORIO</option>
+          <option value="Naturaleza">🌳 NATURALEZA</option>
+          <option value="Historia y Política">🏛️ HISTORIA/POLÍTICA</option>
+          <option value="Arte y Cultura">🎨 ARTE/CULTURA</option>
+          <option value="Mitología y Fantasía">🐉 MITOLOGÍA/FANTASÍA</option>
+          <option value="Ciencia y Tecnología">🔬 CIENCIA/TECNOLOGÍA</option>
+          <option value="Astronomía">🌌 ASTRONOMÍA</option>
+          <option value="Moda y complementos">👗 MODA</option>
+          <option value="Mundo del motor">🏍️ MUNDO DEL MOTOR</option>
+          <option value="Deportes">⚽ DEPORTES</option>
         </select>
       </div>
       <div class="input-group">
-        <fieldset>
-          <legend>Dificultad:</legend>
+          <legend>DIFICULTAD</legend>
           <div class="difficulty-buttons">
-            <button class="difficulty-btn" data-difficulty="0" aria-pressed="false">Fácil</button>
-            <button class="difficulty-btn" data-difficulty="25" aria-pressed="true">Normal</button>
-            <button class="difficulty-btn" data-difficulty="50" aria-pressed="false">Difícil</button>
-            <button class="difficulty-btn" data-difficulty="100" aria-pressed="false">Extremo</button>
+            <button class="difficulty-btn" data-difficulty="0" aria-pressed="false">FÁCIL</button>
+            <button class="difficulty-btn" data-difficulty="25" aria-pressed="true">NORMAL</button>
+            <button class="difficulty-btn" data-difficulty="50" aria-pressed="false">DIFÍCIL</button>
+            <button class="difficulty-btn" data-difficulty="100" aria-pressed="false">EXTREMO</button>
           </div>
-        </fieldset>
       </div>
       <button id="start-single-game" class="confirm-btn" aria-label="Comenzar juego individual">COMENZAR</button>
     </div>
@@ -74,25 +72,23 @@
   <!-- Configuración 2 Jugadores -->
   <div id="config-multi" class="screen hidden" role="dialog" aria-labelledby="multi-player-title">
     <div class="config-container">
-      <h2 id="multi-player-title">Multijugador</h2>
+      <h2 id="multi-player-title">MULTIJUGADOR</h2>
       <div class="input-group">
-        <label for="multi-player1" class="sr-only">Nombre del Jugador 1</label>
-        <input type="text" id="multi-player1" placeholder="Jugador 1" required aria-required="true">
+        <label for="multi-player1" class="sr-only">JUGADOR I</label>
+        <input type="text" id="multi-player1" placeholder="" required aria-required="true">
       </div>
       <div class="input-group">
-        <label for="multi-player2" class="sr-only">Nombre del Jugador 2</label>
-        <input type="text" id="multi-player2" placeholder="Jugador 2" required aria-required="true">
+        <label for="multi-player2" class="sr-only">JUGADOR II</label>
+        <input type="text" id="multi-player2" placeholder="" required aria-required="true">
       </div>
       <div class="input-group">
-        <fieldset>
-          <legend>Dificultad:</legend>
+          <legend>DIFICULTAD</legend>
           <div class="difficulty-buttons">
-            <button class="difficulty-btn" data-difficulty="0" aria-pressed="false">Fácil</button>
-            <button class="difficulty-btn" data-difficulty="25" aria-pressed="true">Normal</button>
-            <button class="difficulty-btn" data-difficulty="50" aria-pressed="false">Difícil</button>
-            <button class="difficulty-btn" data-difficulty="100" aria-pressed="false">Extremo</button>
+            <button class="difficulty-btn" data-difficulty="0" aria-pressed="false">FÁCIL</button>
+            <button class="difficulty-btn" data-difficulty="25" aria-pressed="true">NORMAL</button>
+            <button class="difficulty-btn" data-difficulty="50" aria-pressed="false">DIFÍCIL</button>
+            <button class="difficulty-btn" data-difficulty="100" aria-pressed="false">EXTREMO</button>
           </div>
-        </fieldset>
       </div>
       <button id="next-multi" class="confirm-btn" aria-label="Continuar a la siguiente pantalla">SIGUIENTE</button>
     </div>
@@ -102,7 +98,7 @@
   <div class="popup-container hidden" id="popup-container" role="dialog" aria-labelledby="current-player">
     <div class="popup">
       <p id="current-player" class="player-turn" role="status"></p>
-      <label for="secret-word-input" class="sr-only">Palabra secreta</label>
+      <label for="secret-word-input" class="sr-only">PALABRA SECRETA</label>
       <input type="text" id="secret-word-input" 
             placeholder="ESCRIBE LA PALABRA SECRETA" 
             maxlength="14"
