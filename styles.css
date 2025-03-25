@@ -120,7 +120,6 @@ body.mobile-ui {
 .restart-btn,
 .difficulty-btn,
 .nav-btn,
-.hint-button,
 #keyboard button {
   -webkit-tap-highlight-color: transparent;
   padding: 1rem 2rem;
@@ -306,6 +305,7 @@ body.mobile-ui {
 }
 
 .hint-button {
+  -webkit-tap-highlight-color: transparent;
   background: none;
   border: none;
   cursor: pointer;
@@ -384,6 +384,7 @@ body.mobile-ui {
   cursor: pointer;
   transition: all 0.2s;
   font-family: 'Bubblegum Sans', cursive;
+  padding: 0px !important;
 }
 
 #keyboard button.correct {
