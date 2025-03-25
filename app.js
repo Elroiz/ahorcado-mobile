@@ -38,6 +38,29 @@ const WORD_LIST = [
   { word: "SANCION", hint: "Castigo impuesto por una falta", theme: "Deportes" }
 ];
 
+const CHARACTERS = {
+  explorador: {
+    name: 'EXPLORADOR',
+    image: 'img/characters/explorador.png',
+    description: 'Aventurero intrépido que busca tesoros perdidos'
+  },
+  detective: {
+    name: 'DETECTIVE',
+    image: 'img/characters/detective.png',
+    description: 'Investigador astuto que resuelve misterios'
+  },
+  cientifico: {
+    name: 'CIENTÍFICO',
+    image: 'img/characters/cientifico.png',
+    description: 'Genio brillante que descubre secretos'
+  },
+  mago: {
+    name: 'MAGO',
+    image: 'img/characters/mago.png',
+    description: 'Mago misterioso con poderes especiales'
+  }
+};
+
 // Estado del juego
 const gameState = {
   mode: null,
@@ -51,7 +74,10 @@ const gameState = {
   timeLeft: 0,
   hint: "",
   gameActive: true,
-  gameEnded: false
+  gameEnded: false,
+  player1: null,
+  player2: null,
+  currentPlayer: null
 };
 
 // Gestión de eventos táctiles
@@ -103,6 +129,9 @@ const showConfig = mode => {
   const configScreen = document.getElementById(`config-${mode}`);
   configScreen.classList.remove('hidden');
   requestAnimationFrame(() => configScreen.classList.add('active'));
+  
+  // Configurar la selección de personajes cuando se muestra la pantalla de configuración
+  setupCharacterSelection();
 };
 
 const setupDifficultySlider = () => {
@@ -130,7 +159,14 @@ const setupDifficultySlider = () => {
     
     // Actualizar el estado del juego
     const currentSlide = track.children[currentIndex];
-    gameState.difficulty = parseInt(currentSlide.dataset.difficulty);
+    const newDifficulty = parseInt(currentSlide.dataset.difficulty);
+    gameState.difficulty = newDifficulty;
+    
+    // Actualizar la configuración del juego según la dificultad
+    const difficultyConfig = DIFFICULTY_LEVELS[newDifficulty];
+    gameState.maxFails = difficultyConfig.fails;
+    gameState.timer = difficultyConfig.timer;
+    gameState.startImage = difficultyConfig.startImage;
     
     // Limpiar después de la animación
     track.addEventListener('transitionend', () => {
@@ -149,44 +185,136 @@ const setupDifficultySlider = () => {
   
   // Inicializar el estado del juego con la dificultad por defecto
   const defaultSlide = slides[0];
-  gameState.difficulty = parseInt(defaultSlide.dataset.difficulty);
+  const defaultDifficulty = parseInt(defaultSlide.dataset.difficulty);
+  gameState.difficulty = defaultDifficulty;
+  
+  // Asegurar que el juego comience con la configuración correcta
+  const defaultConfig = DIFFICULTY_LEVELS[defaultDifficulty];
+  gameState.maxFails = defaultConfig.fails;
+  gameState.timer = defaultConfig.timer;
+  gameState.startImage = defaultConfig.startImage;
+};
+
+const setupCharacterSelection = () => {
+  const singlePlayerSelection = document.querySelector('#config-single .character-selection');
+  const player1Selection = document.querySelector('.player1-selection');
+  const player2Selection = document.querySelector('.player2-selection');
+
+  const handleCharacterSelect = (e, playerNumber) => {
+    const button = e.currentTarget;
+    const character = button.dataset.character;
+    
+    // Deseleccionar todos los botones del jugador actual
+    const currentSelection = playerNumber === 1 ? player1Selection : player2Selection;
+    currentSelection.querySelectorAll('.character-btn').forEach(btn => {
+      btn.classList.remove('selected');
+    });
+    
+    // Seleccionar el botón actual
+    button.classList.add('selected');
+    
+    // Actualizar el estado del juego
+    if (playerNumber === 1) {
+      gameState.player1 = CHARACTERS[character];
+    } else {
+      gameState.player2 = CHARACTERS[character];
+    }
+    
+    // En modo multijugador, deshabilitar el personaje seleccionado para el otro jugador
+    if (gameState.mode === 'multi') {
+      const otherSelection = playerNumber === 1 ? player2Selection : player1Selection;
+      otherSelection.querySelectorAll('.character-btn').forEach(btn => {
+        if (btn.dataset.character === character) {
+          btn.classList.add('disabled');
+        } else {
+          // Habilitar el botón si el personaje no está seleccionado por el otro jugador
+          const otherPlayer = playerNumber === 1 ? gameState.player2 : gameState.player1;
+          if (!otherPlayer || otherPlayer.name !== CHARACTERS[btn.dataset.character].name) {
+            btn.classList.remove('disabled');
+          }
+        }
+      });
+    }
+  };
+
+  // Limpiar selecciones anteriores
+  if (singlePlayerSelection) {
+    singlePlayerSelection.querySelectorAll('.character-btn').forEach(btn => {
+      btn.classList.remove('selected', 'disabled');
+    });
+  }
+
+  if (player1Selection && player2Selection) {
+    player1Selection.querySelectorAll('.character-btn').forEach(btn => {
+      btn.classList.remove('selected', 'disabled');
+    });
+    player2Selection.querySelectorAll('.character-btn').forEach(btn => {
+      btn.classList.remove('selected', 'disabled');
+    });
+  }
+
+  // Configurar eventos para modo individual
+  if (singlePlayerSelection) {
+    singlePlayerSelection.querySelectorAll('.character-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => handleCharacterSelect(e, 1));
+    });
+  }
+
+  // Configurar eventos para modo multijugador
+  if (player1Selection && player2Selection) {
+    player1Selection.querySelectorAll('.character-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => handleCharacterSelect(e, 1));
+    });
+    
+    player2Selection.querySelectorAll('.character-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => handleCharacterSelect(e, 2));
+    });
+  }
 };
 
 // Lógica del juego
-const startSingleGame = () => {
-  const playerName = document.getElementById('player1-name').value.trim();
+const getRandomWord = () => {
   const theme = document.getElementById('theme').value;
+  let filteredWords = WORD_LIST;
   
-  if (!playerName) return showMobileAlert('¡Ingresa tu nombre!');
+  // Filtrar palabras por tema si no es aleatorio
+  if (theme !== 'aleatorio') {
+    filteredWords = WORD_LIST.filter(word => word.theme === theme);
+  }
   
-  const filteredWords = theme === 'aleatorio' ? 
-    WORD_LIST : 
-    WORD_LIST.filter(word => word.theme === theme);
-    
-  if (filteredWords.length === 0) return showMobileAlert('No hay palabras disponibles');
+  // Si no hay palabras para el tema seleccionado, usar todas
+  if (filteredWords.length === 0) {
+    filteredWords = WORD_LIST;
+  }
   
-  const selectedWord = filteredWords[Math.floor(Math.random() * filteredWords.length)];
-  gameState.mode = 'single';
-  gameState.players = [playerName];
-  gameState.secretWord = selectedWord.word.toUpperCase();
+  const randomIndex = Math.floor(Math.random() * filteredWords.length);
+  const selectedWord = filteredWords[randomIndex];
+  
+  // Guardar la pista para usarla después
   gameState.hint = selectedWord.hint;
+  
+  return selectedWord.word;
+};
+
+const startSingleGame = () => {
+  if (!gameState.player1) {
+    showMobileAlert('Por favor, selecciona un personaje');
+    return;
+  }
+  gameState.mode = 'single';
+  gameState.currentPlayer = gameState.player1;
+  gameState.secretWord = getRandomWord();
   initializeGame();
 };
 
 const handleMultiPlayerSetup = () => {
-  const [player1, player2] = [
-    document.getElementById('multi-player1').value.trim(),
-    document.getElementById('multi-player2').value.trim()
-  ];
-  
-  if (!player1 || !player2) {
-    showMobileAlert('¡Nombres requeridos!');
+  if (!gameState.player1 || !gameState.player2) {
+    showMobileAlert('Por favor, selecciona un personaje para cada jugador');
     return;
   }
-  
   gameState.mode = 'multi';
-  gameState.players = [player1, player2];
-  showWordPopup();
+  gameState.currentPlayer = gameState.player1;
+  showPopup();
 };
 
 const showWordPopup = () => {
@@ -216,7 +344,6 @@ const startMultiGame = () => {
 };
 
 const initializeGame = () => {
-  setupDifficultySlider();
   const difficultyConfig = DIFFICULTY_LEVELS[gameState.difficulty];
   
   // Inicializar estado del juego
