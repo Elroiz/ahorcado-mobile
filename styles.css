@@ -8,6 +8,9 @@
   --bg-color: rgba(255, 255, 255, 0.95);
   --shadow-color: rgba(0, 0, 0, 0.2);
   --transition-speed: 0.3s;
+  --button-shadow: 3px 8px 2px black;
+  --button-shadow-pressed: 0px 2px 0px black;
+  --button-saturation: 0.6;
 }
 
 /* Reset y Estilos Base */
@@ -133,7 +136,7 @@ body.mobile-ui {
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
   position: relative;
   overflow: hidden;
-  filter: drop-shadow(3px 8px 2px black) saturate(0.6);
+  filter: drop-shadow(3px 6px 2px black) saturate(0.6);
   animation: scaleIn 0.5s ease-out both;
 }
 
@@ -184,10 +187,6 @@ body.mobile-ui {
   border-radius: 15px;
   margin: 20px;
   box-shadow: 0 4px 12px var(--shadow-color);
-}
-
-.input-group {
-  margin: 1.2rem 0;
 }
 
 .input-group input,
@@ -269,31 +268,41 @@ body.mobile-ui {
   right: 1rem;
   width: 60px;
   height: 60px;
-  z-index: 2;
+  z-index: 3;
 }
 
 #hangman-container {
   position: relative;
   width: 100%;
-  height: 50vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  height: 275px;
+  margin: 1rem 0;
+  overflow: hidden;
 }
 
-#hangman-container img {
+.ahorcado {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-  opacity: 0;
-  transition: opacity var(--transition-speed) ease-in-out;
   object-fit: fill;
+  opacity: 0;
+  transition: opacity 0.8s ease-in-out;
+  will-change: opacity;
 }
 
-#hangman-container img.active {
+.ahorcado.active {
+  opacity: 1;
+  z-index: 2;
+}
+
+.ahorcado.prev {
   opacity: 1;
   z-index: 1;
+}
+
+.ahorcado.active + .ahorcado.prev {
+  opacity: 0;
 }
 
 .word-section {
@@ -357,7 +366,6 @@ body.mobile-ui {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  margin-top: auto;
 }
 
 .keyboard-container {
@@ -365,18 +373,21 @@ body.mobile-ui {
   flex-direction: column;
   gap: 8px;
   margin: 20px 0;
+  width: 100%;
+  max-width: 400px;
+  margin: 20px auto;
 }
 
 .keyboard-row {
   display: flex;
   justify-content: center;
-  gap: 5px;
+  gap: 12px;
 }
 
 #keyboard button {
-  width: 40px;
-  height: 40px;
-  font-size: 1.2rem;
+  width: 35px;
+  height: 35px;
+  font-size: 1rem;
   border: 2px solid var(--primary-color);
   border-radius: 8px;
   background: white;
@@ -385,18 +396,25 @@ body.mobile-ui {
   transition: all 0.2s;
   font-family: 'Bubblegum Sans', cursive;
   padding: 0px !important;
+  flex: 1;
+  max-width: 35px;
+  min-width: 35px;
 }
 
 #keyboard button.correct {
   background: var(--accent-color);
   color: white;
   border-color: var(--accent-color);
+  filter: drop-shadow(2px 4px 2px black);
+  translate: 2px 2px;
 }
 
 #keyboard button.incorrect {
   background: var(--wrong-color);
   color: white;
   border-color: var(--wrong-color);
+  filter: drop-shadow(2px 4px 2px black);
+  translate: 2px 2px;
 }
 
 .timer-circle svg {
@@ -447,7 +465,7 @@ body.mobile-ui {
   gap: 1rem;
   width: 100%;
   max-width: 400px;
-  margin: 0 auto;
+  margin: 1.1rem auto;
 }
 
 .nav-btn {
@@ -461,7 +479,7 @@ body.mobile-ui {
   position: relative;
   z-index: 2;
   flex-shrink: 0;
-  filter: drop-shadow(3px 8px 2px black) saturate(0.6);
+  filter: drop-shadow(var(--button-shadow)) saturate(var(--button-saturation));
 }
 
 .nav-btn.right-btn {
@@ -470,7 +488,7 @@ body.mobile-ui {
 
 .nav-btn:active {
   transform: translateY(4px);
-  filter: drop-shadow(0px 2px 0px black) saturate(0.6);
+  filter: drop-shadow(var(--button-shadow-pressed)) saturate(var(--button-saturation));
 }
 
 .difficulty-slider {
@@ -791,4 +809,44 @@ body.mobile-ui {
   color: black;
   text-transform: uppercase;
   white-space: nowrap;
+}
+
+/* Media Queries */
+@media (max-width: 480px) {
+  .title-image {
+    width: 90%;
+  }
+  
+  .keyboard-row button {
+    width: 35px;
+    height: 35px;
+    font-size: 1rem;
+  }
+  
+  .word-display {
+    font-size: 1.5rem;
+    letter-spacing: 0.3rem;
+  }
+  
+  .popup {
+    padding: 1.5rem;
+    width: 90%;
+  }
+}
+
+.restart-btn {
+  background: url('img/button_01.png') center/contain no-repeat;
+  border: none;
+  color: var(--text-color);
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  cursor: pointer;
+  margin-top: 1rem;
+  font-family: inherit;
+  text-shadow: 2px 2px 4px var(--shadow-color);
+  transition: transform 0.2s ease;
+}
+
+.restart-btn:active {
+  transform: translateY(4px);
 }

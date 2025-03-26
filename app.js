@@ -137,177 +137,127 @@ const showConfig = mode => {
   setupThemeSlider();
 };
 
+const createSlider = (container, options) => {
+  const leftBtn = container.querySelector('.left-btn');
+  const rightBtn = container.querySelector('.right-btn');
+  const track = container.querySelector(options.trackClass);
+  const slides = container.querySelectorAll(options.slideClass);
+  
+  let currentIndex = 0;
+  let isAnimating = false;
+  
+  // Inicializar el valor por defecto
+  if (options.onInit) {
+    const currentSlide = slides[currentIndex];
+    options.onInit(currentSlide, currentIndex);
+  }
+  
+  const updateSlide = (direction) => {
+    if (isAnimating) return;
+    
+    const totalSlides = slides.length;
+    const newIndex = (currentIndex + direction + totalSlides) % totalSlides;
+    
+    if (newIndex === currentIndex) return;
+    
+    isAnimating = true;
+    currentIndex = newIndex;
+    
+    track.style.transition = 'transform 0.5s ease-in-out';
+    track.style.transform = `translateX(-${currentIndex * 100}%)`;
+    
+    // Actualizar el estado
+    const currentSlide = slides[currentIndex];
+    if (options.onUpdate) {
+      options.onUpdate(currentSlide, currentIndex);
+    }
+    
+    // Limpiar después de la animación
+    track.addEventListener('transitionend', () => {
+      isAnimating = false;
+      track.style.transition = 'none';
+    }, { once: true });
+  };
+  
+  leftBtn.addEventListener('click', () => updateSlide(-1));
+  rightBtn.addEventListener('click', () => updateSlide(1));
+};
+
 const setupDifficultySlider = () => {
   const containers = document.querySelectorAll('.difficulty-container');
   
   containers.forEach(container => {
-    const leftBtn = container.querySelector('.left-btn');
-    const rightBtn = container.querySelector('.right-btn');
-    const track = container.querySelector('.difficulty-track');
-    const slides = container.querySelectorAll('.difficulty-slide');
-    
-    let currentIndex = 0;
-    let isAnimating = false;
-    
-    const updateDifficulty = (direction) => {
-      if (isAnimating) return;
-      
-      const totalSlides = slides.length;
-      const newIndex = (currentIndex + direction + totalSlides) % totalSlides;
-      
-      if (newIndex === currentIndex) return;
-      
-      isAnimating = true;
-      currentIndex = newIndex;
-      
-      track.style.transition = 'transform 0.5s ease-in-out';
-      track.style.transform = `translateX(-${currentIndex * 100}%)`;
-      
-      // Actualizar el estado del juego
-      const currentSlide = slides[currentIndex];
-      const newDifficulty = parseInt(currentSlide.dataset.difficulty);
-      gameState.difficulty = newDifficulty;
-      
-      // Actualizar la configuración del juego según la dificultad
-      const difficultyConfig = DIFFICULTY_LEVELS[newDifficulty];
-      gameState.maxFails = difficultyConfig.fails;
-      gameState.timer = difficultyConfig.timer;
-      gameState.startImage = difficultyConfig.startImage;
-      
-      // Limpiar después de la animación
-      track.addEventListener('transitionend', () => {
-        isAnimating = false;
-        track.style.transition = 'none';
-      }, { once: true });
-    };
-    
-    leftBtn.addEventListener('click', () => updateDifficulty(-1));
-    rightBtn.addEventListener('click', () => updateDifficulty(1));
+    createSlider(container, {
+      trackClass: '.difficulty-track',
+      slideClass: '.difficulty-slide',
+      onInit: (slide, index) => {
+        const difficulty = parseInt(slide.dataset.difficulty);
+        updateDifficultyConfig(difficulty);
+      },
+      onUpdate: (slide, index) => {
+        const difficulty = parseInt(slide.dataset.difficulty);
+        updateDifficultyConfig(difficulty);
+      }
+    });
   });
-  
-  // Inicializar el estado del juego con la dificultad por defecto
-  const defaultSlide = document.querySelector('.difficulty-slide');
-  const defaultDifficulty = parseInt(defaultSlide.dataset.difficulty);
-  gameState.difficulty = defaultDifficulty;
-  
-  // Asegurar que el juego comience con la configuración correcta
-  const defaultConfig = DIFFICULTY_LEVELS[defaultDifficulty];
-  gameState.maxFails = defaultConfig.fails;
-  gameState.timer = defaultConfig.timer;
-  gameState.startImage = defaultConfig.startImage;
+};
+
+const updateDifficultyConfig = (difficulty) => {
+  gameState.difficulty = difficulty;
+  const config = DIFFICULTY_LEVELS[difficulty];
+  gameState.maxFails = config.fails;
+  gameState.timer = config.timer;
+  gameState.startImage = config.startImage;
 };
 
 const setupCharacterSlider = () => {
   const containers = document.querySelectorAll('.character-container');
   
   containers.forEach(container => {
-    const leftBtn = container.querySelector('.left-btn');
-    const rightBtn = container.querySelector('.right-btn');
-    const track = container.querySelector('.character-track');
-    const slides = container.querySelectorAll('.character-slide');
-    
-    let currentIndex = 0;
-    let isAnimating = false;
-    
-    // Inicializar el personaje por defecto
-    const currentSlide = slides[currentIndex];
-    const character = currentSlide.dataset.character;
-    const isMultiPlayer = container.closest('#config-multi') !== null;
-    const isPlayer2 = container.closest('.input-group:nth-child(2)') !== null;
-    
-    if (isMultiPlayer) {
-      if (isPlayer2) {
-        gameState.player2 = CHARACTERS[character];
-      } else {
-        gameState.player1 = CHARACTERS[character];
+    createSlider(container, {
+      trackClass: '.character-track',
+      slideClass: '.character-slide',
+      onInit: (slide, index) => {
+        const character = slide.dataset.character;
+        updateCharacterSelection(container, character);
+      },
+      onUpdate: (slide, index) => {
+        const character = slide.dataset.character;
+        updateCharacterSelection(container, character);
       }
+    });
+  });
+};
+
+const updateCharacterSelection = (container, character) => {
+  const isMultiPlayer = container.closest('#config-multi') !== null;
+  const isPlayer2 = container.closest('.input-group:nth-child(2)') !== null;
+  
+  if (isMultiPlayer) {
+    if (isPlayer2) {
+      gameState.player2 = CHARACTERS[character];
     } else {
       gameState.player1 = CHARACTERS[character];
     }
-    
-    const updateCharacter = (direction) => {
-      if (isAnimating) return;
-      
-      const totalSlides = slides.length;
-      const newIndex = (currentIndex + direction + totalSlides) % totalSlides;
-      
-      if (newIndex === currentIndex) return;
-      
-      isAnimating = true;
-      currentIndex = newIndex;
-      
-      track.style.transition = 'transform 0.5s ease-in-out';
-      track.style.transform = `translateX(-${currentIndex * 100}%)`;
-      
-      // Actualizar el estado del juego
-      const currentSlide = slides[currentIndex];
-      const character = currentSlide.dataset.character;
-      
-      // Determinar si estamos en modo individual o multijugador
-      const isMultiPlayer = container.closest('#config-multi') !== null;
-      const isPlayer2 = container.closest('.input-group:nth-child(2)') !== null;
-      
-      if (isMultiPlayer) {
-        if (isPlayer2) {
-          gameState.player2 = CHARACTERS[character];
-        } else {
-          gameState.player1 = CHARACTERS[character];
-        }
-      } else {
-        gameState.player1 = CHARACTERS[character];
-      }
-      
-      // Limpiar después de la animación
-      track.addEventListener('transitionend', () => {
-        isAnimating = false;
-        track.style.transition = 'none';
-      }, { once: true });
-    };
-    
-    leftBtn.addEventListener('click', () => updateCharacter(-1));
-    rightBtn.addEventListener('click', () => updateCharacter(1));
-  });
+  } else {
+    gameState.player1 = CHARACTERS[character];
+  }
 };
 
 const setupThemeSlider = () => {
   const containers = document.querySelectorAll('.theme-container');
   
   containers.forEach(container => {
-    const leftBtn = container.querySelector('.left-btn');
-    const rightBtn = container.querySelector('.right-btn');
-    const track = container.querySelector('.theme-track');
-    const slides = container.querySelectorAll('.theme-slide');
-    
-    let currentIndex = 0;
-    let isAnimating = false;
-    
-    const updateTheme = (direction) => {
-      if (isAnimating) return;
-      
-      const totalSlides = slides.length;
-      const newIndex = (currentIndex + direction + totalSlides) % totalSlides;
-      
-      if (newIndex === currentIndex) return;
-      
-      isAnimating = true;
-      currentIndex = newIndex;
-      
-      track.style.transition = 'transform 0.5s ease-in-out';
-      track.style.transform = `translateX(-${currentIndex * 100}%)`;
-      
-      // Actualizar el tema seleccionado en el estado del juego
-      const currentSlide = slides[currentIndex];
-      gameState.selectedTheme = currentSlide.dataset.theme;
-      
-      // Limpiar después de la animación
-      track.addEventListener('transitionend', () => {
-        isAnimating = false;
-        track.style.transition = 'none';
-      }, { once: true });
-    };
-    
-    leftBtn.addEventListener('click', () => updateTheme(-1));
-    rightBtn.addEventListener('click', () => updateTheme(1));
+    createSlider(container, {
+      trackClass: '.theme-track',
+      slideClass: '.theme-slide',
+      onInit: (slide, index) => {
+        gameState.selectedTheme = slide.dataset.theme;
+      },
+      onUpdate: (slide, index) => {
+        gameState.selectedTheme = slide.dataset.theme;
+      }
+    });
   });
 };
 
@@ -372,6 +322,11 @@ const initializeGame = () => {
   });
 
   // Actualizar UI
+  updateGameUI();
+  setupGameElements(difficultyConfig);
+};
+
+const updateGameUI = () => {
   document.querySelectorAll('.screen').forEach(screen => {
     screen.classList.add('hidden', 'active');
   });
@@ -379,13 +334,17 @@ const initializeGame = () => {
   const gameScreen = document.getElementById('game-screen');
   gameScreen.classList.remove('hidden');
   requestAnimationFrame(() => gameScreen.classList.add('active'));
+};
 
+const setupGameElements = (difficultyConfig) => {
   updateHangmanImage(difficultyConfig.startImage);
   updateGameDisplay();
   resetKeyboard();
   setupHintButton();
+  setupTimer(difficultyConfig);
+};
 
-  // Configurar temporizador
+const setupTimer = (difficultyConfig) => {
   const timerCircle = document.querySelector('.timer-circle');
   if (difficultyConfig.timer > 0) {
     startTimer();
@@ -395,152 +354,48 @@ const initializeGame = () => {
   }
 };
 
-const setupHintButton = () => {
-  const hintButton = document.getElementById('hint-button');
-  const hintDisplay = document.getElementById('hint-display');
-  
-  // Ocultar pista y botón por defecto
-  hintDisplay.textContent = '';
-  hintButton.style.display = 'none';
-  
-  // Solo mostrar el botón de pista en modo individual y dificultades Fácil y Normal
-  if (gameState.mode === 'single' && (gameState.difficulty === 0 || gameState.difficulty === 25)) {
-    hintButton.style.display = 'block';
-    hintButton.disabled = false;
-    hintButton.style.opacity = '1';
-    
-    // Remover el event listener anterior si existe
-    hintButton.removeEventListener('click', handleHintClick);
-    // Añadir el nuevo event listener
-    hintButton.addEventListener('click', handleHintClick);
-  }
-};
-
-const handleHintClick = () => {
-  const hintDisplay = document.getElementById('hint-display');
-  const hintButton = document.getElementById('hint-button');
-  
-  hintDisplay.textContent = gameState.hint;
-  hintButton.disabled = true;
-  hintButton.style.opacity = '0.5';
-};
-
-const updateGameDisplay = () => {
-  const wordDisplay = document.getElementById('word-display');
-  
-  wordDisplay.textContent = gameState.guessedLetters.join(' ');
-  
-  // Actualizar teclado
-  document.querySelectorAll('#keyboard button').forEach(button => {
-    const letter = button.getAttribute('data-letter');
-    if (gameState.wrongLetters.includes(letter)) {
-      button.classList.add('incorrect');
-      button.disabled = true;
-    } else if (gameState.guessedLetters.includes(letter)) {
-      button.classList.add('correct');
-      button.disabled = true;
-    }
-  });
-};
-
-const resetKeyboard = () => {
-  const keyboard = document.getElementById('keyboard');
-  keyboard.innerHTML = '';
-  
-  const letters = 'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ'.split('');
-  const rows = [
-    letters.slice(0, 9),
-    letters.slice(9, 18),
-    letters.slice(18, 27)
-  ];
-
-  rows.forEach((row, index) => {
-    const rowDiv = document.createElement('div');
-    rowDiv.className = `keyboard-row row-${index + 1}`;
-    
-    row.forEach(letter => {
-      const button = document.createElement('button');
-      button.textContent = letter;
-      button.dataset.letter = letter;
-      button.addEventListener('touchstart', e => {
-        e.preventDefault();
-        if (!button.disabled) handleLetter(letter);
-      });
-      rowDiv.appendChild(button);
-    });
-    keyboard.appendChild(rowDiv);
-  });
-};
-
 const handleLetter = letter => {
+  if (!gameState.gameActive) return; // No procesar letras si el juego no está activo
+  
   const button = document.querySelector(`button[data-letter="${letter}"]`);
   button.disabled = true;
 
   if (gameState.secretWord.includes(letter)) {
-    button.classList.add('correct');
-    gameState.secretWord.split('').forEach((char, index) => {
-      if (char === letter) gameState.guessedLetters[index] = letter;
-    });
-    
-    // Reiniciar el temporizador cuando se acierta una letra
-    const difficultyConfig = DIFFICULTY_LEVELS[gameState.difficulty];
-    if (difficultyConfig.timer > 0) {
-      if (gameState.timer) {
-        cancelAnimationFrame(gameState.timer);
-      }
-      gameState.timeLeft = difficultyConfig.timer;
-      startTimer();
-    }
+    handleCorrectLetter(letter, button);
   } else {
-    button.classList.add('incorrect');
-    gameState.wrongLetters.push(letter);
-    gameState.attemptsLeft--;
-    updateHangmanImage();
+    handleWrongLetter(letter, button);
   }
 
   updateGameDisplay();
   checkGameStatus();
 };
 
-const updateHangmanImage = () => {
-  const hangmanContainer = document.getElementById('hangman-container');
-  const difficultyConfig = DIFFICULTY_LEVELS[gameState.difficulty];
-  const currentImage = difficultyConfig.startImage + 
-    (difficultyConfig.fails - gameState.attemptsLeft);
-
-  // Crear la nueva imagen
-  const newImage = document.createElement('img');
-  newImage.src = `img/ahorcado_${String(currentImage).padStart(2, '0')}.png`;
-  newImage.classList.add('ahorcado');
-  newImage.alt = `Estado del ahorcado - Intento ${currentImage}`;
-
-  // Agregar la nueva imagen al contenedor
-  hangmanContainer.appendChild(newImage);
-
-  // Si hay una imagen anterior, iniciar la transición
-  const currentImageElement = hangmanContainer.querySelector('img.active');
-  if (currentImageElement) {
-    // Mostrar la nueva imagen gradualmente
-    requestAnimationFrame(() => {
-      newImage.classList.add('active');
-    });
-
-    // Eliminar la imagen anterior después de la transición
-    setTimeout(() => {
-      currentImageElement.classList.remove('active');
-      setTimeout(() => currentImageElement.remove(), 500);
-    }, 500);
-  } else {
-    // Si no hay imagen anterior, simplemente mostrar la nueva
-    newImage.classList.add('active');
-  }
+const handleCorrectLetter = (letter, button) => {
+  button.classList.add('correct');
+  gameState.secretWord.split('').forEach((char, index) => {
+    if (char === letter) gameState.guessedLetters[index] = letter;
+  });
+  
+  resetTimer();
 };
 
-const checkGameStatus = () => {
-  if (!gameState.guessedLetters.includes('_')) {
-    endGame(true);
-  } else if (gameState.attemptsLeft <= 0) {
-    endGame(false);
+const handleWrongLetter = (letter, button) => {
+  if (!gameState.gameActive) return; // No procesar letras incorrectas si el juego no está activo
+  
+  button.classList.add('incorrect');
+  gameState.wrongLetters.push(letter);
+  gameState.attemptsLeft--;
+  updateHangmanImage();
+};
+
+const resetTimer = () => {
+  const difficultyConfig = DIFFICULTY_LEVELS[gameState.difficulty];
+  if (difficultyConfig.timer > 0) {
+    if (gameState.timer) {
+      cancelAnimationFrame(gameState.timer);
+    }
+    gameState.timeLeft = difficultyConfig.timer;
+    startTimer();
   }
 };
 
@@ -552,19 +407,25 @@ const endGame = win => {
     cancelAnimationFrame(gameState.timer);
   }
   
+  // Deshabilitar todos los botones del teclado
+  document.querySelectorAll('#keyboard button').forEach(button => {
+    button.disabled = true;
+  });
+  
+  // Deshabilitar el botón de pista si existe
+  const hintButton = document.getElementById('hint-button');
+  if (hintButton) {
+    hintButton.disabled = true;
+  }
+  
   const message = win ? 
-    `¡Felicidades ${gameState.players[0]}! Has ganado.` :
+    `¡Felicidades ${gameState.currentPlayer.name}! Has ganado.` :
     `¡Game Over! La palabra era: ${gameState.secretWord}`;
     
   showMobileAlert(message);
   
-  // Si ganó, reiniciar el temporizador para la siguiente palabra
   if (win) {
-    const difficultyConfig = DIFFICULTY_LEVELS[gameState.difficulty];
-    gameState.timeLeft = difficultyConfig.timer;
-    if (difficultyConfig.timer > 0) {
-      startTimer();
-    }
+    resetTimer();
   }
 };
 
@@ -659,4 +520,131 @@ const getRandomWord = () => {
   gameState.hint = selectedWord.hint;
   
   return selectedWord.word;
+};
+
+const updateHangmanImage = () => {
+  if (!gameState.gameActive) return;
+  
+  const hangmanContainer = document.getElementById('hangman-container');
+  const difficultyConfig = DIFFICULTY_LEVELS[gameState.difficulty];
+  const currentImage = difficultyConfig.startImage + 
+    (difficultyConfig.fails - gameState.attemptsLeft);
+
+  // Crear la nueva imagen
+  const newImage = document.createElement('img');
+  newImage.src = `img/ahorcado_${String(currentImage).padStart(2, '0')}.png`;
+  newImage.classList.add('ahorcado');
+  newImage.alt = `Estado del ahorcado - Intento ${currentImage}`;
+
+  // Obtener la imagen actual
+  const currentImageElement = hangmanContainer.querySelector('img.active');
+  
+  // Agregar la nueva imagen al contenedor
+  hangmanContainer.appendChild(newImage);
+
+  // Forzar un reflow para asegurar que la transición funcione
+  newImage.offsetHeight;
+
+  if (currentImageElement) {
+    // Marcar la imagen actual como previa
+    currentImageElement.classList.remove('active');
+    currentImageElement.classList.add('prev');
+
+    // Activar la nueva imagen
+    newImage.classList.add('active');
+
+    // Eliminar la imagen anterior después de que la nueva esté completamente visible
+    setTimeout(() => {
+      currentImageElement.remove();
+    }, 1200); // Ajustamos el tiempo para que coincida con la transición CSS
+  } else {
+    // Si no hay imagen anterior, simplemente mostrar la nueva
+    newImage.classList.add('active');
+  }
+};
+
+const updateGameDisplay = () => {
+  const wordDisplay = document.getElementById('word-display');
+  
+  wordDisplay.textContent = gameState.guessedLetters.join(' ');
+  
+  // Actualizar teclado
+  document.querySelectorAll('#keyboard button').forEach(button => {
+    const letter = button.getAttribute('data-letter');
+    if (gameState.wrongLetters.includes(letter)) {
+      button.classList.add('incorrect');
+      button.disabled = true;
+    } else if (gameState.guessedLetters.includes(letter)) {
+      button.classList.add('correct');
+      button.disabled = true;
+    }
+  });
+};
+
+const resetKeyboard = () => {
+  const keyboard = document.getElementById('keyboard');
+  keyboard.innerHTML = '';
+  
+  const letters = 'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ'.split('');
+  const rows = [
+    letters.slice(0, 7),    // Primera fila: A-G
+    letters.slice(7, 14),   // Segunda fila: H-N
+    letters.slice(14, 21),  // Tercera fila: O-U
+    letters.slice(21, 27)   // Cuarta fila: V-Z
+  ];
+
+  rows.forEach((row, index) => {
+    const rowDiv = document.createElement('div');
+    rowDiv.className = `keyboard-row row-${index + 1}`;
+    
+    row.forEach(letter => {
+      const button = document.createElement('button');
+      button.textContent = letter;
+      button.dataset.letter = letter;
+      button.addEventListener('touchstart', e => {
+        e.preventDefault();
+        if (!button.disabled) handleLetter(letter);
+      });
+      rowDiv.appendChild(button);
+    });
+    keyboard.appendChild(rowDiv);
+  });
+};
+
+const setupHintButton = () => {
+  const hintButton = document.getElementById('hint-button');
+  const hintDisplay = document.getElementById('hint-display');
+  
+  // Ocultar pista y botón por defecto
+  hintDisplay.textContent = '';
+  hintButton.style.display = 'none';
+  
+  // Solo mostrar el botón de pista en modo individual y dificultades Fácil y Normal
+  if (gameState.mode === 'single' && (gameState.difficulty === 0 || gameState.difficulty === 25)) {
+    hintButton.style.display = 'block';
+    hintButton.disabled = false;
+    hintButton.style.opacity = '1';
+    
+    // Remover el event listener anterior si existe
+    hintButton.removeEventListener('click', handleHintClick);
+    // Añadir el nuevo event listener
+    hintButton.addEventListener('click', handleHintClick);
+  }
+};
+
+const handleHintClick = () => {
+  const hintDisplay = document.getElementById('hint-display');
+  const hintButton = document.getElementById('hint-button');
+  
+  hintDisplay.textContent = gameState.hint;
+  hintButton.disabled = true;
+  hintButton.style.opacity = '0.5';
+};
+
+const checkGameStatus = () => {
+  if (!gameState.guessedLetters.includes('_')) {
+    endGame(true);
+  } else if (gameState.attemptsLeft <= 0) {
+    endGame(false);
+  }
 };

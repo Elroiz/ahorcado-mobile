@@ -10,7 +10,6 @@
   <!-- Preload de recursos críticos -->
   <link rel="preload" href="styles.css" as="style">
   <link rel="preload" href="app.js" as="script">
-  <link rel="preload" href="img/ahorcado_00.png" as="image">
   
   <!-- Fuentes optimizadas -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -147,7 +146,7 @@
     <div class="config-container">
       <h2 id="multi-player-title">MULTIJUGADOR</h2>
       <div class="input-group">
-        <legend>JUGADOR I - ELEGIR PERSONAJE</legend>
+        <legend>JUGADOR I</legend>
         <div class="character-container">
           <button class="nav-btn left-btn" aria-label="Personaje anterior"></button>
           <div class="character-slider">
@@ -182,7 +181,7 @@
         </div>
       </div>
       <div class="input-group">
-        <legend>JUGADOR II - ELEGIR PERSONAJE</legend>
+        <legend>JUGADOR II</legend>
         <div class="character-container">
           <button class="nav-btn left-btn" aria-label="Personaje anterior"></button>
           <div class="character-slider">
@@ -241,44 +240,38 @@
       <p id="current-player" class="player-turn" role="status"></p>
       <label for="secret-word-input" class="sr-only">PALABRA SECRETA</label>
       <input type="text" id="secret-word-input" 
-            placeholder="ESCRIBE LA PALABRA SECRETA" 
+            placeholder="PALABRA SECRETA" 
             maxlength="14"
             autocapitalize="characters"
             aria-label="Escribe la palabra secreta">
-      <button id="confirm-word" class="confirm-btn" aria-label="Confirmar palabra secreta">COMENZAR</button>
+      <button id="confirm-word" class="confirm-btn" aria-label="Confirmar palabra secreta">JUGAR</button>
     </div>
   </div>
 
   <!-- Pantalla de Juego -->
   <div id="game-screen" class="screen hidden" role="main">
     <div class="game-container">
-      <div class="timer-circle" role="timer" aria-live="polite">
-        <svg viewBox="0 0 100 100" aria-hidden="true">
-          <circle cx="50" cy="50" r="45" class="base-circle"/>
-          <circle cx="50" cy="50" r="45" class="progress-circle"/>
+      <div class="timer-circle">
+        <svg width="60" height="60">
+          <circle class="base-circle" cx="30" cy="30" r="25"></circle>
+          <circle class="progress-circle" cx="30" cy="30" r="25"></circle>
         </svg>
       </div>
       <div id="hangman-container">
-        <img src="img/ahorcado_00.png" class="ahorcado" alt="Estado del ahorcado">
+        <!-- La imagen se maneja dinámicamente desde JavaScript -->
       </div>
-      
       <div class="game-info">
         <div class="word-section">
-          <p id="word-display" class="word-display" aria-live="polite"></p>
-          <button id="hint-button" class="hint-button" aria-label="Mostrar pista">
-            <svg class="hint-icon" viewBox="0 0 24 24" width="24" height="24">
-              <path fill="currentColor" d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+          <div id="word-display" class="word-display"></div>
+          <button id="hint-button" class="hint-button">
+            <svg class="hint-icon" viewBox="0 0 24 24">
+              <path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"></path>
             </svg>
           </button>
         </div>
-        <div id="hint-display" class="hint-text" aria-live="polite"></div>
-        
-        <div id="keyboard" class="keyboard-container" role="group" aria-label="Teclado virtual"></div>
-        
-        <div class="game-stats">
-        </div>
-        
-        <button id="restart-button" class="restart-btn" aria-label="Reiniciar juego">REINICIAR</button>
+        <div id="hint-display" class="hint-text"></div>
+        <div id="keyboard" class="keyboard-container"></div>
+        <button id="restart-button" class="restart-btn">REINICIAR</button>
       </div>
     </div>
   </div>
