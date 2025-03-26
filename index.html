@@ -237,6 +237,16 @@
   <!-- Popup Palabra Secreta -->
   <div class="popup-container hidden" id="popup-container" role="dialog" aria-labelledby="current-player">
     <div class="popup">
+      <div class="player-selection">
+        <button class="player-select-btn" data-player="1">
+          <img src="" alt="Jugador 1" class="player-select-avatar">
+          <span class="player-select-name"></span>
+        </button>
+        <button class="player-select-btn" data-player="2">
+          <img src="" alt="Jugador 2" class="player-select-avatar">
+          <span class="player-select-name"></span>
+        </button>
+      </div>
       <p id="current-player" class="player-turn" role="status"></p>
       <label for="secret-word-input" class="sr-only">PALABRA SECRETA</label>
       <input type="text" id="secret-word-input" 
@@ -248,31 +258,47 @@
     </div>
   </div>
 
+  <!-- Popup Fin de Partida -->
+  <div class="popup-container hidden" id="end-game-popup" role="dialog" aria-labelledby="end-game-message">
+    <div class="popup">
+      <p id="end-game-message" class="end-game-message" role="status"></p>
+      <div class="end-game-buttons">
+        <button id="new-game-btn" class="end-game-btn">Nueva Partida</button>
+        <button id="next-round-btn" class="end-game-btn">Otra Ronda</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Pantalla de Juego -->
-  <div id="game-screen" class="screen hidden" role="main">
+  <div id="game-screen" class="screen">
     <div class="game-container">
-      <div class="timer-circle">
-        <svg width="60" height="60">
-          <circle class="base-circle" cx="30" cy="30" r="25"></circle>
-          <circle class="progress-circle" cx="30" cy="30" r="25"></circle>
-        </svg>
+      <div class="game-header">
+        <div class="player-info">
+          <img id="player-avatar" src="" alt="Avatar del jugador" class="player-avatar">
+          <div class="hint-container">
+            <div id="hint-display" class="hint-text"></div>
+          </div>
+        </div>
+        <div class="timer-circle">
+          <svg width="60" height="60">
+            <circle class="base-circle" cx="30" cy="30" r="25" />
+            <circle class="progress-circle" cx="30" cy="30" r="25" />
+          </svg>
+        </div>
       </div>
       <div id="hangman-container">
         <!-- La imagen se maneja dinámicamente desde JavaScript -->
       </div>
-      <div class="game-info">
-        <div class="word-section">
-          <div id="word-display" class="word-display"></div>
-          <button id="hint-button" class="hint-button">
-            <svg class="hint-icon" viewBox="0 0 24 24">
-              <path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"></path>
-            </svg>
-          </button>
-        </div>
-        <div id="hint-display" class="hint-text"></div>
-        <div id="keyboard" class="keyboard-container"></div>
-        <button id="restart-button" class="restart-btn">REINICIAR</button>
+      <div class="word-section">
+        <button id="hint-button" class="hint-button" aria-label="Mostrar pista">
+          <svg class="hint-icon" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/>
+          </svg>
+        </button>
+        <div id="word-display"></div>
       </div>
+      <div id="keyboard" class="keyboard-container"></div>
+      <button id="restart-button" class="restart-btn">Reiniciar Juego</button>
     </div>
   </div>
 

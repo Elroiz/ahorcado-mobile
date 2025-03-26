@@ -280,10 +280,47 @@ const handleMultiPlayerSetup = () => {
 const showPopup = () => {
   const popup = document.getElementById('popup-container');
   const input = document.getElementById('secret-word-input');
-  popup.classList.remove('hidden');
+  
+  // Actualizar imágenes y nombres de los jugadores
+  const player1Btn = document.querySelector('.player-select-btn[data-player="1"]');
+  const player2Btn = document.querySelector('.player-select-btn[data-player="2"]');
+  
+  player1Btn.querySelector('img').src = gameState.player1.image;
+  player1Btn.querySelector('.player-select-name').textContent = gameState.player1.name;
+  
+  player2Btn.querySelector('img').src = gameState.player2.image;
+  player2Btn.querySelector('.player-select-name').textContent = gameState.player2.name;
+  
+  // Seleccionar jugador 1 por defecto
+  player1Btn.classList.add('selected');
+  player2Btn.classList.remove('selected');
+  gameState.currentPlayer = gameState.player1;
   document.getElementById('current-player').textContent = `${gameState.player1.name}, escribe la palabra:`;
+  
+  // Agregar event listeners para la selección de jugadores
+  player1Btn.addEventListener('click', () => selectPlayer(1));
+  player2Btn.addEventListener('click', () => selectPlayer(2));
+  
+  popup.classList.remove('hidden');
   input.value = ''; // Limpiar el input
   input.focus();
+};
+
+const selectPlayer = (playerNumber) => {
+  const player1Btn = document.querySelector('.player-select-btn[data-player="1"]');
+  const player2Btn = document.querySelector('.player-select-btn[data-player="2"]');
+  
+  if (playerNumber === 1) {
+    player1Btn.classList.add('selected');
+    player2Btn.classList.remove('selected');
+    gameState.currentPlayer = gameState.player1;
+    document.getElementById('current-player').textContent = `${gameState.player1.name}, escribe la palabra:`;
+  } else {
+    player2Btn.classList.add('selected');
+    player1Btn.classList.remove('selected');
+    gameState.currentPlayer = gameState.player2;
+    document.getElementById('current-player').textContent = `${gameState.player2.name}, escribe la palabra:`;
+  }
 };
 
 const hideOverlay = () => {
@@ -304,6 +341,16 @@ const startMultiGame = () => {
   }
   
   gameState.secretWord = secretWord;
+  
+  // El jugador que escribió la palabra será el que adivina
+  // Si el jugador actual es el jugador 1, el jugador 2 adivinará
+  // Si el jugador actual es el jugador 2, el jugador 1 adivinará
+  if (gameState.currentPlayer === gameState.player1) {
+    gameState.currentPlayer = gameState.player2;
+  } else {
+    gameState.currentPlayer = gameState.player1;
+  }
+  
   hideOverlay();
   initializeGame();
 };
@@ -324,6 +371,16 @@ const initializeGame = () => {
   // Actualizar UI
   updateGameUI();
   setupGameElements(difficultyConfig);
+  
+  // Actualizar imagen del jugador que adivina
+  updateCurrentPlayerAvatar();
+};
+
+const updateCurrentPlayerAvatar = () => {
+  const playerAvatar = document.getElementById('player-avatar');
+  if (playerAvatar && gameState.currentPlayer) {
+    playerAvatar.src = gameState.currentPlayer.image;
+  }
 };
 
 const updateGameUI = () => {
@@ -418,31 +475,129 @@ const endGame = win => {
     hintButton.disabled = true;
   }
   
+  // Mostrar mensaje en el popup de fin de partida
   const message = win ? 
     `¡Felicidades ${gameState.currentPlayer.name}! Has ganado.` :
     `¡Game Over! La palabra era: ${gameState.secretWord}`;
     
-  showMobileAlert(message);
+  showEndGamePopup(message);
   
   if (win) {
     resetTimer();
   }
 };
 
-const resetGame = () => {
-  gameState.gameActive = true;
-  gameState.gameEnded = false;
+const showEndGamePopup = (message) => {
+  const popup = document.getElementById('end-game-popup');
+  const messageElement = document.getElementById('end-game-message');
+  const newGameBtn = document.getElementById('new-game-btn');
+  const nextRoundBtn = document.getElementById('next-round-btn');
   
+  messageElement.textContent = message;
+  
+  // Configurar botones
+  newGameBtn.onclick = () => {
+    popup.classList.add('hidden');
+    resetGame();
+  };
+  
+  nextRoundBtn.onclick = () => {
+    popup.classList.add('hidden');
+    if (gameState.mode === 'multi') {
+      showPopup(); // Mostrar popup para introducir palabra en modo multijugador
+    } else {
+      gameState.secretWord = getRandomWord();
+      initializeGame();
+    }
+  };
+  
+  popup.classList.remove('hidden');
+};
+
+const resetGame = () => {
+  // Reiniciar el estado del juego
+  Object.assign(gameState, {
+    mode: null,
+    players: [],
+    difficulty: 50, // Dificultad por defecto
+    secretWord: "",
+    guessedLetters: [],
+    wrongLetters: [],
+    attemptsLeft: 0,
+    timer: null,
+    timeLeft: 0,
+    hint: "",
+    gameActive: true,
+    gameEnded: false,
+    player1: null,
+    player2: null,
+    currentPlayer: null,
+    selectedTheme: "aleatorio"
+  });
+  
+  // Cancelar el temporizador si existe
   if (gameState.timer) {
     cancelAnimationFrame(gameState.timer);
   }
   
+  // Ocultar todos los popups
+  document.getElementById('popup-container').classList.add('hidden');
+  document.getElementById('end-game-popup').classList.add('hidden');
+  
+  // Ocultar todas las pantallas
   document.querySelectorAll('.screen').forEach(screen => {
     screen.classList.add('hidden', 'active');
   });
   
-  document.getElementById('start-screen').classList.remove('hidden');
-  requestAnimationFrame(() => document.getElementById('start-screen').classList.add('active'));
+  // Mostrar la pantalla de inicio
+  const startScreen = document.getElementById('start-screen');
+  startScreen.classList.remove('hidden');
+  requestAnimationFrame(() => startScreen.classList.add('active'));
+  
+  // Limpiar el input de palabra secreta
+  const secretWordInput = document.getElementById('secret-word-input');
+  if (secretWordInput) {
+    secretWordInput.value = '';
+  }
+  
+  // Limpiar el display de la palabra
+  const wordDisplay = document.getElementById('word-display');
+  if (wordDisplay) {
+    wordDisplay.textContent = '';
+  }
+  
+  // Limpiar el display de la pista
+  const hintDisplay = document.getElementById('hint-display');
+  if (hintDisplay) {
+    hintDisplay.textContent = '';
+  }
+  
+  // Limpiar el contenedor del ahorcado
+  const hangmanContainer = document.getElementById('hangman-container');
+  if (hangmanContainer) {
+    hangmanContainer.innerHTML = '';
+  }
+  
+  // Limpiar el teclado
+  const keyboard = document.getElementById('keyboard');
+  if (keyboard) {
+    keyboard.innerHTML = '';
+  }
+  
+  // Habilitar el botón de pista si existe
+  const hintButton = document.getElementById('hint-button');
+  if (hintButton) {
+    hintButton.disabled = false;
+    hintButton.style.opacity = '1';
+    hintButton.style.display = 'none';
+  }
+  
+  // Reiniciar el temporizador visual
+  const progressCircle = document.querySelector('.progress-circle');
+  if (progressCircle) {
+    progressCircle.style.strokeDasharray = '';
+    progressCircle.style.strokeDashoffset = '';
+  }
 };
 
 const startTimer = () => {
