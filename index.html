@@ -39,43 +39,89 @@
       <h2 id="single-player-title">MODO INDIVIDUAL</h2>
       <div class="input-group">
         <legend>ELEGIR PERSONAJE</legend>
-        <div class="character-selection">
-          <div class="character-option">
-            <button class="character-btn" data-character="explorador">
-              <img src="img/characters/explorador.png" alt="Explorador">
-            </button>
+        <div class="character-container">
+          <button class="nav-btn left-btn" aria-label="Personaje anterior"></button>
+          <div class="character-slider">
+            <div class="character-track">
+              <div class="character-slide" data-character="explorador">
+                <div class="character-image-container">
+                  <img src="img/characters/explorador.png" alt="Explorador">
+                </div>
+                <div class="character-name">EXPLORADOR</div>
+              </div>
+              <div class="character-slide" data-character="detective">
+                <div class="character-image-container">
+                  <img src="img/characters/detective.png" alt="Detective">
+                </div>
+                <div class="character-name">DETECTIVE</div>
+              </div>
+              <div class="character-slide" data-character="cientifico">
+                <div class="character-image-container">
+                  <img src="img/characters/cientifico.png" alt="Científico">
+                </div>
+                <div class="character-name">CIENTÍFICO</div>
+              </div>
+              <div class="character-slide" data-character="mago">
+                <div class="character-image-container">
+                  <img src="img/characters/mago.png" alt="Mago">
+                </div>
+                <div class="character-name">MAGO</div>
+              </div>
+            </div>
           </div>
-          <div class="character-option">
-            <button class="character-btn" data-character="detective">
-              <img src="img/characters/detective.png" alt="Detective">
-            </button>
-          </div>
-          <div class="character-option">
-            <button class="character-btn" data-character="cientifico">
-              <img src="img/characters/cientifico.png" alt="Científico">
-            </button>
-          </div>
-          <div class="character-option">
-            <button class="character-btn" data-character="mago">
-              <img src="img/characters/mago.png" alt="Mago">
-            </button>
-          </div>
+          <button class="nav-btn right-btn" aria-label="Siguiente personaje"></button>
         </div>
       </div>
       <div class="input-group">
-        <label for="theme" class="sr-only">TEMA</label>
-        <select id="theme" aria-label="Selecciona un tema">
-          <option value="aleatorio">🎲 ALEATORIO</option>
-          <option value="Naturaleza">🌳 NATURALEZA</option>
-          <option value="Historia y Política">🏛️ HISTORIA/POLÍTICA</option>
-          <option value="Arte y Cultura">🎨 ARTE/CULTURA</option>
-          <option value="Mitología y Fantasía">🐉 MITOLOGÍA/FANTASÍA</option>
-          <option value="Ciencia y Tecnología">🔬 CIENCIA/TECNOLOGÍA</option>
-          <option value="Astronomía">🌌 ASTRONOMÍA</option>
-          <option value="Moda y complementos">👗 MODA</option>
-          <option value="Mundo del motor">🏍️ MUNDO DEL MOTOR</option>
-          <option value="Deportes">⚽ DEPORTES</option>
-        </select>
+        <legend>TEMA</legend>
+        <div class="theme-container">
+          <button class="nav-btn left-btn" aria-label="Tema anterior"></button>
+          <div class="theme-slider">
+            <div class="theme-track">
+              <div class="theme-slide" data-theme="aleatorio">
+                <div class="theme-image-container">🎲</div>
+                <div class="theme-name">ALEATORIO</div>
+              </div>
+              <div class="theme-slide" data-theme="Naturaleza">
+                <div class="theme-image-container">🌳</div>
+                <div class="theme-name">NATURALEZA</div>
+              </div>
+              <div class="theme-slide" data-theme="Historia y Política">
+                <div class="theme-image-container">🏛️</div>
+                <div class="theme-name">HISTORIA</div>
+              </div>
+              <div class="theme-slide" data-theme="Arte y Cultura">
+                <div class="theme-image-container">🎨</div>
+                <div class="theme-name">ARTE</div>
+              </div>
+              <div class="theme-slide" data-theme="Mitología y Fantasía">
+                <div class="theme-image-container">🐉</div>
+                <div class="theme-name">FANTASÍA</div>
+              </div>
+              <div class="theme-slide" data-theme="Ciencia y Tecnología">
+                <div class="theme-image-container">🔬</div>
+                <div class="theme-name">CIENCIA</div>
+              </div>
+              <div class="theme-slide" data-theme="Astronomía">
+                <div class="theme-image-container">🌌</div>
+                <div class="theme-name">ASTRONOMÍA</div>
+              </div>
+              <div class="theme-slide" data-theme="Moda y complementos">
+                <div class="theme-image-container">👗</div>
+                <div class="theme-name">MODA</div>
+              </div>
+              <div class="theme-slide" data-theme="Mundo del motor">
+                <div class="theme-image-container">🏍️</div>
+                <div class="theme-name">MOTOR</div>
+              </div>
+              <div class="theme-slide" data-theme="Deportes">
+                <div class="theme-image-container">⚽</div>
+                <div class="theme-name">DEPORTES</div>
+              </div>
+            </div>
+          </div>
+          <button class="nav-btn right-btn" aria-label="Siguiente tema"></button>
+        </div>
       </div>
       <div class="input-group">
         <legend>DIFICULTAD</legend>
@@ -92,7 +138,7 @@
           <button class="nav-btn right-btn" aria-label="Siguiente dificultad"></button>
         </div>
       </div>
-      <button id="start-single-game" class="confirm-btn" aria-label="Comenzar juego individual">COMENZAR</button>
+      <button id="start-single-game" class="confirm-btn" aria-label="Comenzar juego individual">JUGAR</button>
     </div>
   </div>
 
@@ -102,68 +148,88 @@
       <h2 id="multi-player-title">MULTIJUGADOR</h2>
       <div class="input-group">
         <legend>JUGADOR I - ELEGIR PERSONAJE</legend>
-        <div class="character-selection player1-selection">
-          <div class="character-option">
-            <button class="character-btn" data-character="explorador">
-              <img src="img/characters/explorador.png" alt="Explorador">
-            </button>
+        <div class="character-container">
+          <button class="nav-btn left-btn" aria-label="Personaje anterior"></button>
+          <div class="character-slider">
+            <div class="character-track">
+              <div class="character-slide" data-character="explorador">
+                <div class="character-image-container">
+                  <img src="img/characters/explorador.png" alt="Explorador">
+                </div>
+                <div class="character-name">EXPLORADOR</div>
+              </div>
+              <div class="character-slide" data-character="detective">
+                <div class="character-image-container">
+                  <img src="img/characters/detective.png" alt="Detective">
+                </div>
+                <div class="character-name">DETECTIVE</div>
+              </div>
+              <div class="character-slide" data-character="cientifico">
+                <div class="character-image-container">
+                  <img src="img/characters/cientifico.png" alt="Científico">
+                </div>
+                <div class="character-name">CIENTÍFICO</div>
+              </div>
+              <div class="character-slide" data-character="mago">
+                <div class="character-image-container">
+                  <img src="img/characters/mago.png" alt="Mago">
+                </div>
+                <div class="character-name">MAGO</div>
+              </div>
+            </div>
           </div>
-          <div class="character-option">
-            <button class="character-btn" data-character="detective">
-              <img src="img/characters/detective.png" alt="Detective">
-            </button>
-          </div>
-          <div class="character-option">
-            <button class="character-btn" data-character="cientifico">
-              <img src="img/characters/cientifico.png" alt="Científico">
-            </button>
-          </div>
-          <div class="character-option">
-            <button class="character-btn" data-character="mago">
-              <img src="img/characters/mago.png" alt="Mago">
-            </button>
-          </div>
+          <button class="nav-btn right-btn" aria-label="Siguiente personaje"></button>
         </div>
       </div>
       <div class="input-group">
         <legend>JUGADOR II - ELEGIR PERSONAJE</legend>
-        <div class="character-selection player2-selection">
-          <div class="character-option">
-            <button class="character-btn" data-character="explorador">
-              <img src="img/characters/explorador.png" alt="Explorador">
-            </button>
+        <div class="character-container">
+          <button class="nav-btn left-btn" aria-label="Personaje anterior"></button>
+          <div class="character-slider">
+            <div class="character-track">
+              <div class="character-slide" data-character="explorador">
+                <div class="character-image-container">
+                  <img src="img/characters/explorador.png" alt="Explorador">
+                </div>
+                <div class="character-name">EXPLORADOR</div>
+              </div>
+              <div class="character-slide" data-character="detective">
+                <div class="character-image-container">
+                  <img src="img/characters/detective.png" alt="Detective">
+                </div>
+                <div class="character-name">DETECTIVE</div>
+              </div>
+              <div class="character-slide" data-character="cientifico">
+                <div class="character-image-container">
+                  <img src="img/characters/cientifico.png" alt="Científico">
+                </div>
+                <div class="character-name">CIENTÍFICO</div>
+              </div>
+              <div class="character-slide" data-character="mago">
+                <div class="character-image-container">
+                  <img src="img/characters/mago.png" alt="Mago">
+                </div>
+                <div class="character-name">MAGO</div>
+              </div>
+            </div>
           </div>
-          <div class="character-option">
-            <button class="character-btn" data-character="detective">
-              <img src="img/characters/detective.png" alt="Detective">
-            </button>
-          </div>
-          <div class="character-option">
-            <button class="character-btn" data-character="cientifico">
-              <img src="img/characters/cientifico.png" alt="Científico">
-            </button>
-          </div>
-          <div class="character-option">
-            <button class="character-btn" data-character="mago">
-              <img src="img/characters/mago.png" alt="Mago">
-            </button>
-          </div>
+          <button class="nav-btn right-btn" aria-label="Siguiente personaje"></button>
         </div>
       </div>
       <div class="input-group">
-          <legend>DIFICULTAD</legend>
-          <div class="difficulty-container">
-            <button class="nav-btn left-btn" aria-label="Dificultad anterior"></button>
-            <div class="difficulty-slider">
-              <div class="difficulty-track">
-                <div class="difficulty-slide" data-difficulty="0">FÁCIL</div>
-                <div class="difficulty-slide" data-difficulty="25">NORMAL</div>
-                <div class="difficulty-slide" data-difficulty="50">DIFÍCIL</div>
-                <div class="difficulty-slide" data-difficulty="100">EXTREMO</div>
-              </div>
+        <legend>DIFICULTAD</legend>
+        <div class="difficulty-container">
+          <button class="nav-btn left-btn" aria-label="Dificultad anterior"></button>
+          <div class="difficulty-slider">
+            <div class="difficulty-track">
+              <div class="difficulty-slide" data-difficulty="0">FÁCIL</div>
+              <div class="difficulty-slide" data-difficulty="25">NORMAL</div>
+              <div class="difficulty-slide" data-difficulty="50">DIFÍCIL</div>
+              <div class="difficulty-slide" data-difficulty="100">EXTREMO</div>
             </div>
-            <button class="nav-btn right-btn" aria-label="Siguiente dificultad"></button>
           </div>
+          <button class="nav-btn right-btn" aria-label="Siguiente dificultad"></button>
+        </div>
       </div>
       <button id="next-multi" class="confirm-btn" aria-label="Continuar a la siguiente pantalla">SIGUIENTE</button>
     </div>

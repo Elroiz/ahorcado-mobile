@@ -77,7 +77,8 @@ const gameState = {
   gameEnded: false,
   player1: null,
   player2: null,
-  currentPlayer: null
+  currentPlayer: null,
+  selectedTheme: "aleatorio"
 };
 
 // Gestión de eventos táctiles
@@ -130,61 +131,62 @@ const showConfig = mode => {
   configScreen.classList.remove('hidden');
   requestAnimationFrame(() => configScreen.classList.add('active'));
   
-  // Configurar la selección de personajes cuando se muestra la pantalla de configuración
-  setupCharacterSelection();
+  // Configurar todos los sliders
+  setupDifficultySlider();
+  setupCharacterSlider();
+  setupThemeSlider();
 };
 
 const setupDifficultySlider = () => {
-  const leftBtns = document.querySelectorAll('.left-btn');
-  const rightBtns = document.querySelectorAll('.right-btn');
-  const tracks = document.querySelectorAll('.difficulty-track');
-  const slides = document.querySelectorAll('.difficulty-slide');
+  const containers = document.querySelectorAll('.difficulty-container');
   
-  let currentIndex = 0;
-  let isAnimating = false;
-  
-  const updateDifficulty = (track, direction) => {
-    if (isAnimating) return;
+  containers.forEach(container => {
+    const leftBtn = container.querySelector('.left-btn');
+    const rightBtn = container.querySelector('.right-btn');
+    const track = container.querySelector('.difficulty-track');
+    const slides = container.querySelectorAll('.difficulty-slide');
     
-    const totalSlides = track.children.length;
-    const newIndex = (currentIndex + direction + totalSlides) % totalSlides;
+    let currentIndex = 0;
+    let isAnimating = false;
     
-    if (newIndex === currentIndex) return;
+    const updateDifficulty = (direction) => {
+      if (isAnimating) return;
+      
+      const totalSlides = slides.length;
+      const newIndex = (currentIndex + direction + totalSlides) % totalSlides;
+      
+      if (newIndex === currentIndex) return;
+      
+      isAnimating = true;
+      currentIndex = newIndex;
+      
+      track.style.transition = 'transform 0.5s ease-in-out';
+      track.style.transform = `translateX(-${currentIndex * 100}%)`;
+      
+      // Actualizar el estado del juego
+      const currentSlide = slides[currentIndex];
+      const newDifficulty = parseInt(currentSlide.dataset.difficulty);
+      gameState.difficulty = newDifficulty;
+      
+      // Actualizar la configuración del juego según la dificultad
+      const difficultyConfig = DIFFICULTY_LEVELS[newDifficulty];
+      gameState.maxFails = difficultyConfig.fails;
+      gameState.timer = difficultyConfig.timer;
+      gameState.startImage = difficultyConfig.startImage;
+      
+      // Limpiar después de la animación
+      track.addEventListener('transitionend', () => {
+        isAnimating = false;
+        track.style.transition = 'none';
+      }, { once: true });
+    };
     
-    isAnimating = true;
-    currentIndex = newIndex;
-    
-    track.style.transition = 'transform 0.5s ease-in-out';
-    track.style.transform = `translateX(-${currentIndex * 100}%)`;
-    
-    // Actualizar el estado del juego
-    const currentSlide = track.children[currentIndex];
-    const newDifficulty = parseInt(currentSlide.dataset.difficulty);
-    gameState.difficulty = newDifficulty;
-    
-    // Actualizar la configuración del juego según la dificultad
-    const difficultyConfig = DIFFICULTY_LEVELS[newDifficulty];
-    gameState.maxFails = difficultyConfig.fails;
-    gameState.timer = difficultyConfig.timer;
-    gameState.startImage = difficultyConfig.startImage;
-    
-    // Limpiar después de la animación
-    track.addEventListener('transitionend', () => {
-      isAnimating = false;
-      track.style.transition = 'none';
-    }, { once: true });
-  };
-  
-  leftBtns.forEach((btn, index) => {
-    btn.addEventListener('click', () => updateDifficulty(tracks[index], -1));
-  });
-  
-  rightBtns.forEach((btn, index) => {
-    btn.addEventListener('click', () => updateDifficulty(tracks[index], 1));
+    leftBtn.addEventListener('click', () => updateDifficulty(-1));
+    rightBtn.addEventListener('click', () => updateDifficulty(1));
   });
   
   // Inicializar el estado del juego con la dificultad por defecto
-  const defaultSlide = slides[0];
+  const defaultSlide = document.querySelector('.difficulty-slide');
   const defaultDifficulty = parseInt(defaultSlide.dataset.difficulty);
   gameState.difficulty = defaultDifficulty;
   
@@ -195,116 +197,118 @@ const setupDifficultySlider = () => {
   gameState.startImage = defaultConfig.startImage;
 };
 
-const setupCharacterSelection = () => {
-  const singlePlayerSelection = document.querySelector('#config-single .character-selection');
-  const player1Selection = document.querySelector('.player1-selection');
-  const player2Selection = document.querySelector('.player2-selection');
-
-  const handleCharacterSelect = (e, playerNumber) => {
-    const button = e.currentTarget;
-    const character = button.dataset.character;
+const setupCharacterSlider = () => {
+  const containers = document.querySelectorAll('.character-container');
+  
+  containers.forEach(container => {
+    const leftBtn = container.querySelector('.left-btn');
+    const rightBtn = container.querySelector('.right-btn');
+    const track = container.querySelector('.character-track');
+    const slides = container.querySelectorAll('.character-slide');
     
-    // Deseleccionar todos los botones del jugador actual
-    const currentSelection = playerNumber === 1 ? player1Selection : player2Selection;
-    currentSelection.querySelectorAll('.character-btn').forEach(btn => {
-      btn.classList.remove('selected');
-    });
+    let currentIndex = 0;
+    let isAnimating = false;
     
-    // Seleccionar el botón actual
-    button.classList.add('selected');
+    // Inicializar el personaje por defecto
+    const currentSlide = slides[currentIndex];
+    const character = currentSlide.dataset.character;
+    const isMultiPlayer = container.closest('#config-multi') !== null;
+    const isPlayer2 = container.closest('.input-group:nth-child(2)') !== null;
     
-    // Actualizar el estado del juego
-    if (playerNumber === 1) {
-      gameState.player1 = CHARACTERS[character];
+    if (isMultiPlayer) {
+      if (isPlayer2) {
+        gameState.player2 = CHARACTERS[character];
+      } else {
+        gameState.player1 = CHARACTERS[character];
+      }
     } else {
-      gameState.player2 = CHARACTERS[character];
+      gameState.player1 = CHARACTERS[character];
     }
     
-    // En modo multijugador, deshabilitar el personaje seleccionado para el otro jugador
-    if (gameState.mode === 'multi') {
-      const otherSelection = playerNumber === 1 ? player2Selection : player1Selection;
-      otherSelection.querySelectorAll('.character-btn').forEach(btn => {
-        if (btn.dataset.character === character) {
-          btn.classList.add('disabled');
+    const updateCharacter = (direction) => {
+      if (isAnimating) return;
+      
+      const totalSlides = slides.length;
+      const newIndex = (currentIndex + direction + totalSlides) % totalSlides;
+      
+      if (newIndex === currentIndex) return;
+      
+      isAnimating = true;
+      currentIndex = newIndex;
+      
+      track.style.transition = 'transform 0.5s ease-in-out';
+      track.style.transform = `translateX(-${currentIndex * 100}%)`;
+      
+      // Actualizar el estado del juego
+      const currentSlide = slides[currentIndex];
+      const character = currentSlide.dataset.character;
+      
+      // Determinar si estamos en modo individual o multijugador
+      const isMultiPlayer = container.closest('#config-multi') !== null;
+      const isPlayer2 = container.closest('.input-group:nth-child(2)') !== null;
+      
+      if (isMultiPlayer) {
+        if (isPlayer2) {
+          gameState.player2 = CHARACTERS[character];
         } else {
-          // Habilitar el botón si el personaje no está seleccionado por el otro jugador
-          const otherPlayer = playerNumber === 1 ? gameState.player2 : gameState.player1;
-          if (!otherPlayer || otherPlayer.name !== CHARACTERS[btn.dataset.character].name) {
-            btn.classList.remove('disabled');
-          }
+          gameState.player1 = CHARACTERS[character];
         }
-      });
-    }
-  };
-
-  // Limpiar selecciones anteriores
-  if (singlePlayerSelection) {
-    singlePlayerSelection.querySelectorAll('.character-btn').forEach(btn => {
-      btn.classList.remove('selected', 'disabled');
-    });
-  }
-
-  if (player1Selection && player2Selection) {
-    player1Selection.querySelectorAll('.character-btn').forEach(btn => {
-      btn.classList.remove('selected', 'disabled');
-    });
-    player2Selection.querySelectorAll('.character-btn').forEach(btn => {
-      btn.classList.remove('selected', 'disabled');
-    });
-  }
-
-  // Configurar eventos para modo individual
-  if (singlePlayerSelection) {
-    singlePlayerSelection.querySelectorAll('.character-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => handleCharacterSelect(e, 1));
-    });
-  }
-
-  // Configurar eventos para modo multijugador
-  if (player1Selection && player2Selection) {
-    player1Selection.querySelectorAll('.character-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => handleCharacterSelect(e, 1));
-    });
+      } else {
+        gameState.player1 = CHARACTERS[character];
+      }
+      
+      // Limpiar después de la animación
+      track.addEventListener('transitionend', () => {
+        isAnimating = false;
+        track.style.transition = 'none';
+      }, { once: true });
+    };
     
-    player2Selection.querySelectorAll('.character-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => handleCharacterSelect(e, 2));
-    });
-  }
+    leftBtn.addEventListener('click', () => updateCharacter(-1));
+    rightBtn.addEventListener('click', () => updateCharacter(1));
+  });
 };
 
-// Lógica del juego
-const getRandomWord = () => {
-  const theme = document.getElementById('theme').value;
-  let filteredWords = WORD_LIST;
+const setupThemeSlider = () => {
+  const containers = document.querySelectorAll('.theme-container');
   
-  // Filtrar palabras por tema si no es aleatorio
-  if (theme !== 'aleatorio') {
-    filteredWords = WORD_LIST.filter(word => word.theme === theme);
-  }
-  
-  // Si no hay palabras para el tema seleccionado, usar todas
-  if (filteredWords.length === 0) {
-    filteredWords = WORD_LIST;
-  }
-  
-  const randomIndex = Math.floor(Math.random() * filteredWords.length);
-  const selectedWord = filteredWords[randomIndex];
-  
-  // Guardar la pista para usarla después
-  gameState.hint = selectedWord.hint;
-  
-  return selectedWord.word;
-};
-
-const startSingleGame = () => {
-  if (!gameState.player1) {
-    showMobileAlert('Por favor, selecciona un personaje');
-    return;
-  }
-  gameState.mode = 'single';
-  gameState.currentPlayer = gameState.player1;
-  gameState.secretWord = getRandomWord();
-  initializeGame();
+  containers.forEach(container => {
+    const leftBtn = container.querySelector('.left-btn');
+    const rightBtn = container.querySelector('.right-btn');
+    const track = container.querySelector('.theme-track');
+    const slides = container.querySelectorAll('.theme-slide');
+    
+    let currentIndex = 0;
+    let isAnimating = false;
+    
+    const updateTheme = (direction) => {
+      if (isAnimating) return;
+      
+      const totalSlides = slides.length;
+      const newIndex = (currentIndex + direction + totalSlides) % totalSlides;
+      
+      if (newIndex === currentIndex) return;
+      
+      isAnimating = true;
+      currentIndex = newIndex;
+      
+      track.style.transition = 'transform 0.5s ease-in-out';
+      track.style.transform = `translateX(-${currentIndex * 100}%)`;
+      
+      // Actualizar el tema seleccionado en el estado del juego
+      const currentSlide = slides[currentIndex];
+      gameState.selectedTheme = currentSlide.dataset.theme;
+      
+      // Limpiar después de la animación
+      track.addEventListener('transitionend', () => {
+        isAnimating = false;
+        track.style.transition = 'none';
+      }, { once: true });
+    };
+    
+    leftBtn.addEventListener('click', () => updateTheme(-1));
+    rightBtn.addEventListener('click', () => updateTheme(1));
+  });
 };
 
 const handleMultiPlayerSetup = () => {
@@ -312,17 +316,28 @@ const handleMultiPlayerSetup = () => {
     showMobileAlert('Por favor, selecciona un personaje para cada jugador');
     return;
   }
+  
+  if (gameState.player1.name === gameState.player2.name) {
+    showMobileAlert('Los jugadores no pueden elegir el mismo personaje');
+    return;
+  }
+  
   gameState.mode = 'multi';
   gameState.currentPlayer = gameState.player1;
   showPopup();
 };
 
-const showWordPopup = () => {
+const showPopup = () => {
   const popup = document.getElementById('popup-container');
   const input = document.getElementById('secret-word-input');
   popup.classList.remove('hidden');
-  document.getElementById('current-player').textContent = `${gameState.players[0]}, escribe la palabra:`;
+  document.getElementById('current-player').textContent = `${gameState.player1.name}, escribe la palabra:`;
+  input.value = ''; // Limpiar el input
   input.focus();
+};
+
+const hideOverlay = () => {
+  document.getElementById('popup-container').classList.add('hidden');
 };
 
 const startMultiGame = () => {
@@ -611,6 +626,37 @@ const showMobileAlert = message => {
   }, 3000);
 };
 
-const hideOverlay = () => {
-  document.getElementById('popup-container').classList.add('hidden');
+const startSingleGame = () => {
+  if (!gameState.player1) {
+    showMobileAlert('Por favor, selecciona un personaje');
+    return;
+  }
+  
+  gameState.mode = 'single';
+  gameState.currentPlayer = gameState.player1;
+  gameState.secretWord = getRandomWord();
+  initializeGame();
+};
+
+const getRandomWord = () => {
+  const theme = gameState.selectedTheme;
+  let filteredWords = WORD_LIST;
+  
+  // Filtrar palabras por tema si no es aleatorio
+  if (theme !== 'aleatorio') {
+    filteredWords = WORD_LIST.filter(word => word.theme === theme);
+  }
+  
+  // Si no hay palabras para el tema seleccionado, usar todas
+  if (filteredWords.length === 0) {
+    filteredWords = WORD_LIST;
+  }
+  
+  const randomIndex = Math.floor(Math.random() * filteredWords.length);
+  const selectedWord = filteredWords[randomIndex];
+  
+  // Guardar la pista para usarla después
+  gameState.hint = selectedWord.hint;
+  
+  return selectedWord.word;
 };

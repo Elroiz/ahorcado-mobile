@@ -457,7 +457,7 @@ body.mobile-ui {
   border: none;
   background: url('img/left.png') center/contain no-repeat;
   cursor: pointer;
-  transition: transform 0.2s ease;
+  transition: all 0.1s ease;
   position: relative;
   z-index: 2;
   flex-shrink: 0;
@@ -468,12 +468,9 @@ body.mobile-ui {
   background-image: url('img/right.png');
 }
 
-.nav-btn:hover {
-  transform: scale(1.1);
-}
-
 .nav-btn:active {
-  transform: scale(0.95);
+  transform: translateY(4px);
+  filter: drop-shadow(0px 2px 0px black) saturate(0.6);
 }
 
 .difficulty-slider {
@@ -700,4 +697,98 @@ body.mobile-ui {
     opacity: 1;
     transform: scale(1);
   }
+}
+
+/* Sliders */
+.character-container,
+.theme-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.character-slider,
+.theme-slider {
+  width: 165px;
+  overflow: hidden;
+  position: relative;
+}
+
+.character-track,
+.theme-track {
+  display: flex;
+  transition: transform 0.5s ease-in-out;
+  width: 100%;
+}
+
+.character-slide {
+  flex: 0 0 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  min-height: 120px;
+  position: relative;
+  pointer-events: none;
+  gap: 1rem;
+}
+
+.character-image-container {
+  width: 100%;
+  height: 100px;
+  background: url('img/button_03.png') center/contain no-repeat;
+  background-size: 80% 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  filter: drop-shadow(3px 8px 2px black) saturate(0.6);
+}
+
+.character-image-container img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  position: relative;
+  z-index: 1;
+}
+
+.theme-slide {
+  flex: 0 0 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  min-height: 120px;
+  position: relative;
+  pointer-events: none;
+  gap: 1rem;
+}
+
+.theme-image-container {
+  width: 100%;
+  height: 100px;
+  background: url('img/button_03.png') center/contain no-repeat;
+  background-size: 80% 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  filter: drop-shadow(3px 8px 2px black) saturate(0.6);
+  font-size: 3rem;
+}
+
+.theme-name,
+.character-name {
+  font-family: 'Bubblegum Sans', cursive;
+  font-size: 1.1rem;
+  color: black;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
