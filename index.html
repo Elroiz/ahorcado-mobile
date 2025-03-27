@@ -3,125 +3,302 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Ahorcado Medieval</title>
-  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
+  <meta name="description" content="Juego del Ahorcado - Diviértete jugando solo o con amigos">
+  <meta name="theme-color" content="#000000">
+  <title>El Ahorcado - Adivina</title>
+  
+  <!-- Preload de recursos críticos -->
+  <link rel="preload" href="styles.css" as="style">
+  <link rel="preload" href="app.js" as="script">
+  
+  <!-- Fuentes optimizadas -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body class="mobile-ui">
   <!-- Imagen de fondo -->
-  <div id="bg-image"></div>
+  <div id="bg-image" role="presentation"></div>
 
   <!-- Pantalla Principal -->
-  <div id="start-screen" class="screen">
+  <div id="start-screen" class="screen active" role="main">
     <div class="start-content">
-      <h1 class="title">AHORCADO</h1>
+      <img src="img/title.png" alt="El Ahorcado" class="title-image">
       <div class="mode-buttons">
-        <button id="single-player-btn" class="mode-btn">1 Jugador</button>
-        <button id="multi-player-btn" class="mode-btn">2 Jugadores</button>
+        <button id="single-player-btn" class="mode-btn" aria-label="Jugar modo individual">I JUGADOR</button>
+        <button id="multi-player-btn" class="mode-btn" aria-label="Jugar modo multijugador">II JUGADORES</button>
       </div>
     </div>
   </div>
 
   <!-- Configuración 1 Jugador -->
-  <div id="config-single" class="screen hidden">
+  <div id="config-single" class="screen hidden" role="dialog" aria-labelledby="single-player-title">
     <div class="config-container">
-      <h2>Modo Individual</h2>
+      <h2 id="single-player-title">MODO INDIVIDUAL</h2>
       <div class="input-group">
-        <input type="text" id="player1-name" placeholder="Tu nombre" required>
-      </div>
-      <div class="input-group">
-        <select id="theme">
-          <option value="aleatorio">🎲 Aleatorio</option>
-          <option value="Naturaleza">🌳 Naturaleza</option>
-          <option value="Historia y Política">🏛️ Historia/Política</option>
-          <option value="Arte y Cultura">🎨 Arte/Cultura</option>
-          <option value="Mitología y Fantasía">🐉 Mitología/Fantasía</option>
-          <option value="Ciencia y Tecnología">🔬 Ciencia/Tecnología</option>
-          <option value="Astronomía">🌌 Astronomía</option>
-          <option value="Moda y complementos">👗 Moda</option>
-          <option value="Mundo del motor">🏍️ Motor</option>
-          <option value="Deportes">⚽ Deportes</option>
-        </select>
-      </div>
-      <div class="input-group">
-        <label>Dificultad:</label>
-        <div class="difficulty-buttons">
-          <button class="difficulty-btn" data-difficulty="0">Fácil</button>
-          <button class="difficulty-btn" data-difficulty="25" selected>Normal</button>
-          <button class="difficulty-btn" data-difficulty="50">Difícil</button>
-          <button class="difficulty-btn" data-difficulty="100">Extremo</button>
+        <legend>ELEGIR PERSONAJE</legend>
+        <div class="character-container">
+          <button class="nav-btn left-btn" aria-label="Personaje anterior"></button>
+          <div class="character-slider">
+            <div class="character-track">
+              <div class="character-slide" data-character="daniel">
+                <div class="character-image-container">
+                  <img src="img/characters/daniel.png" alt="Daniel">
+                </div>
+                <div class="character-name">DANIEL</div>
+              </div>
+              <div class="character-slide" data-character="maria">
+                <div class="character-image-container">
+                  <img src="img/characters/maria.png" alt="Maria">
+                </div>
+                <div class="character-name">MARIA</div>
+              </div>
+              <div class="character-slide" data-character="aroa">
+                <div class="character-image-container">
+                  <img src="img/characters/aroa.png" alt="Aroa">
+                </div>
+                <div class="character-name">AROA</div>
+              </div>
+              <div class="character-slide" data-character="cristian">
+                <div class="character-image-container">
+                  <img src="img/characters/cristian.png" alt="Cristian">
+                </div>
+                <div class="character-name">CRISTIAN</div>
+              </div>
+            </div>
+          </div>
+          <button class="nav-btn right-btn" aria-label="Siguiente personaje"></button>
         </div>
       </div>
-      <button id="start-single-game" class="confirm-btn">COMENZAR</button>
+      <div class="input-group">
+        <legend>TEMA</legend>
+        <div class="theme-container">
+          <button class="nav-btn left-btn" aria-label="Tema anterior"></button>
+          <div class="theme-slider">
+            <div class="theme-track">
+              <div class="theme-slide" data-theme="aleatorio">
+                <div class="theme-image-container">🎲</div>
+                <div class="theme-name">ALEATORIO</div>
+              </div>
+              <div class="theme-slide" data-theme="Naturaleza">
+                <div class="theme-image-container">🌳</div>
+                <div class="theme-name">NATURALEZA</div>
+              </div>
+              <div class="theme-slide" data-theme="Historia y Política">
+                <div class="theme-image-container">🏛️</div>
+                <div class="theme-name">HISTORIA</div>
+              </div>
+              <div class="theme-slide" data-theme="Arte y Cultura">
+                <div class="theme-image-container">🎨</div>
+                <div class="theme-name">ARTE</div>
+              </div>
+              <div class="theme-slide" data-theme="Mitología y Fantasía">
+                <div class="theme-image-container">🐉</div>
+                <div class="theme-name">FANTASÍA</div>
+              </div>
+              <div class="theme-slide" data-theme="Ciencia y Tecnología">
+                <div class="theme-image-container">🔬</div>
+                <div class="theme-name">CIENCIA</div>
+              </div>
+              <div class="theme-slide" data-theme="Astronomía">
+                <div class="theme-image-container">🌌</div>
+                <div class="theme-name">ASTRONOMÍA</div>
+              </div>
+              <div class="theme-slide" data-theme="Moda y complementos">
+                <div class="theme-image-container">👗</div>
+                <div class="theme-name">MODA</div>
+              </div>
+              <div class="theme-slide" data-theme="Mundo del motor">
+                <div class="theme-image-container">🏍️</div>
+                <div class="theme-name">MOTOR</div>
+              </div>
+              <div class="theme-slide" data-theme="Deportes">
+                <div class="theme-image-container">⚽</div>
+                <div class="theme-name">DEPORTES</div>
+              </div>
+            </div>
+          </div>
+          <button class="nav-btn right-btn" aria-label="Siguiente tema"></button>
+        </div>
+      </div>
+      <div class="input-group">
+        <legend>DIFICULTAD</legend>
+        <div class="difficulty-container">
+          <button class="nav-btn left-btn" aria-label="Dificultad anterior"></button>
+          <div class="difficulty-slider">
+            <div class="difficulty-track">
+              <div class="difficulty-slide" data-difficulty="0">FÁCIL</div>
+              <div class="difficulty-slide" data-difficulty="25">NORMAL</div>
+              <div class="difficulty-slide" data-difficulty="50">DIFÍCIL</div>
+              <div class="difficulty-slide" data-difficulty="100">EXTREMO</div>
+            </div>
+          </div>
+          <button class="nav-btn right-btn" aria-label="Siguiente dificultad"></button>
+        </div>
+      </div>
+      <button id="start-single-game" class="confirm-btn" aria-label="Comenzar juego individual">JUGAR</button>
     </div>
   </div>
 
   <!-- Configuración 2 Jugadores -->
-  <div id="config-multi" class="screen hidden">
+  <div id="config-multi" class="screen hidden" role="dialog" aria-labelledby="multi-player-title">
     <div class="config-container">
-      <h2>Multijugador</h2>
+      <h2 id="multi-player-title">MULTIJUGADOR</h2>
       <div class="input-group">
-        <input type="text" id="multi-player1" placeholder="Jugador 1" required>
-      </div>
-      <div class="input-group">
-        <input type="text" id="multi-player2" placeholder="Jugador 2" required>
-      </div>
-      <div class="input-group">
-        <label>Dificultad:</label>
-        <div class="difficulty-buttons">
-          <button class="difficulty-btn" data-difficulty="0">Fácil</button>
-          <button class="difficulty-btn" data-difficulty="25" selected>Normal</button>
-          <button class="difficulty-btn" data-difficulty="50">Difícil</button>
-          <button class="difficulty-btn" data-difficulty="100">Extremo</button>
+        <legend>JUGADOR I</legend>
+        <div class="character-container">
+          <button class="nav-btn left-btn" aria-label="Personaje anterior"></button>
+          <div class="character-slider">
+            <div class="character-track">
+              <div class="character-slide" data-character="daniel">
+                <div class="character-image-container">
+                  <img src="img/characters/daniel.png" alt="Daniel">
+                </div>
+                <div class="character-name">DANIEL</div>
+              </div>
+              <div class="character-slide" data-character="maria">
+                <div class="character-image-container">
+                  <img src="img/characters/maria.png" alt="Maria">
+                </div>
+                <div class="character-name">MARIA</div>
+              </div>
+              <div class="character-slide" data-character="aroa">
+                <div class="character-image-container">
+                  <img src="img/characters/aroa.png" alt="Aroa">
+                </div>
+                <div class="character-name">AROA</div>
+              </div>
+              <div class="character-slide" data-character="cristian">
+                <div class="character-image-container">
+                  <img src="img/characters/cristian.png" alt="Cristian">
+                </div>
+                <div class="character-name">CRISTIAN</div>
+              </div>
+            </div>
+          </div>
+          <button class="nav-btn right-btn" aria-label="Siguiente personaje"></button>
         </div>
       </div>
-      <button id="next-multi" class="confirm-btn">SIGUIENTE</button>
+      <div class="input-group">
+        <legend>JUGADOR II</legend>
+        <div class="character-container">
+          <button class="nav-btn left-btn" aria-label="Personaje anterior"></button>
+          <div class="character-slider">
+            <div class="character-track">
+              <div class="character-slide" data-character="daniel">
+                <div class="character-image-container">
+                  <img src="img/characters/daniel.png" alt="Daniel">
+                </div>
+                <div class="character-name">DANIEL</div>
+              </div>
+              <div class="character-slide" data-character="maria">
+                <div class="character-image-container">
+                  <img src="img/characters/maria.png" alt="Maria">
+                </div>
+                <div class="character-name">MARIA</div>
+              </div>
+              <div class="character-slide" data-character="aroa">
+                <div class="character-image-container">
+                  <img src="img/characters/aroa.png" alt="Aroa">
+                </div>
+                <div class="character-name">AROA</div>
+              </div>
+              <div class="character-slide" data-character="cristian">
+                <div class="character-image-container">
+                  <img src="img/characters/cristian.png" alt="Cristian">
+                </div>
+                <div class="character-name">CRISTIAN</div>
+              </div>
+            </div>
+          </div>
+          <button class="nav-btn right-btn" aria-label="Siguiente personaje"></button>
+        </div>
+      </div>
+      <div class="input-group">
+        <legend>DIFICULTAD</legend>
+        <div class="difficulty-container">
+          <button class="nav-btn left-btn" aria-label="Dificultad anterior"></button>
+          <div class="difficulty-slider">
+            <div class="difficulty-track">
+              <div class="difficulty-slide" data-difficulty="0">FÁCIL</div>
+              <div class="difficulty-slide" data-difficulty="25">NORMAL</div>
+              <div class="difficulty-slide" data-difficulty="50">DIFÍCIL</div>
+              <div class="difficulty-slide" data-difficulty="100">EXTREMO</div>
+            </div>
+          </div>
+          <button class="nav-btn right-btn" aria-label="Siguiente dificultad"></button>
+        </div>
+      </div>
+      <button id="next-multi" class="confirm-btn" aria-label="Continuar a la siguiente pantalla">SIGUIENTE</button>
     </div>
   </div>
 
   <!-- Popup Palabra Secreta -->
-  <div class="popup-container hidden" id="popup-container">
+  <div class="popup-container hidden" id="popup-container" role="dialog" aria-labelledby="current-player">
     <div class="popup">
-      <p id="current-player" class="player-turn">JUGADOR 1:</p>
+      <div class="player-selection">
+        <button class="player-select-btn" data-player="1">
+          <img src="" alt="Jugador 1" class="player-select-avatar">
+        </button>
+        <button class="player-select-btn" data-player="2">
+          <img src="" alt="Jugador 2" class="player-select-avatar">
+        </button>
+      </div>
+      <p id="current-player" class="player-turn" role="status"></p>
       <input type="text" id="secret-word-input" 
-            placeholder="ESCRIBE LA PALABRA SECRETA" 
+            placeholder="" 
             maxlength="14"
-            autocapitalize="characters">
-      <button id="confirm-word" class="confirm-btn">COMENZAR</button>
+            autocapitalize="characters"
+            aria-label="Escribe la palabra secreta">
+      <button id="confirm-word" class="confirm-btn" aria-label="Confirmar palabra secreta">JUGAR</button>
+    </div>
+  </div>
+
+  <!-- Popup Fin de Partida -->
+  <div class="popup-container hidden" id="end-game-popup" role="dialog" aria-labelledby="end-game-message">
+    <div class="popup">
+      <p id="end-game-message" class="end-game-message" role="status"></p>
+      <div class="end-game-buttons">
+        <button id="new-game-btn" class="end-game-btn">Nueva Partida</button>
+        <button id="next-round-btn" class="end-game-btn">Otra Ronda</button>
+      </div>
     </div>
   </div>
 
   <!-- Pantalla de Juego -->
-  <div id="game-screen" class="screen hidden">
+  <div id="game-screen" class="screen">
     <div class="game-container">
-      <div class="timer-circle">
-        <svg viewBox="0 0 100 100">
-          <circle cx="50" cy="50" r="45" class="base-circle"/>
-          <circle cx="50" cy="50" r="45" class="progress-circle"/>
-        </svg>
-      </div>
-      <div id="hangman-container">
-        <img src="img/ahorcado_00.png" class="ahorcado">
-      </div>
-      
-      <div class="game-info">
-        <p id="word-display" class="word-display"></p>
-        <div id="hint-display" class="hint-text"></div>
-        
-        <div id="keyboard" class="keyboard-container"></div>
-        
-        <div class="game-stats">
-          <div class="attempts-counter">
-            <span>Intentos: </span>
-            <span id="remaining-attempts"></span>
+      <div class="game-header">
+        <div class="player-info">
+          <img id="player-avatar" src="" alt="Avatar del jugador" class="player-avatar">
+          <div class="hint-container">
+            <div id="hint-display" class="hint-text"></div>
           </div>
         </div>
-        
-        <button id="restart-button" class="restart-btn">REINICIAR</button>
+        <div class="timer-circle">
+          <svg width="60" height="60">
+            <circle class="base-circle" cx="30" cy="30" r="25" />
+            <circle class="progress-circle" cx="30" cy="30" r="25" />
+          </svg>
+        </div>
       </div>
+      <div id="hangman-container">
+        <!-- La imagen se maneja dinámicamente desde JavaScript -->
+      </div>
+      <div class="word-section">
+        <button id="hint-button" class="hint-button" aria-label="Mostrar pista">
+          <svg class="hint-icon" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/>
+          </svg>
+        </button>
+        <div id="word-display"></div>
+      </div>
+      <div id="keyboard" class="keyboard-container"></div>
+      <button id="restart-button" class="restart-btn">Reiniciar Juego</button>
     </div>
   </div>
 
-  <script src="app.js"></script>
+  <script src="app.js" defer></script>
 </body>
 </html>
