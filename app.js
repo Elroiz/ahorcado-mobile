@@ -39,25 +39,21 @@ const WORD_LIST = [
 ];
 
 const CHARACTERS = {
-  explorador: {
-    name: 'EXPLORADOR',
-    image: 'img/characters/explorador.png',
-    description: 'Aventurero intrépido que busca tesoros perdidos'
+  daniel: {
+    name: 'DANIEL',
+    image: 'img/characters/daniel.png'
   },
-  detective: {
-    name: 'DETECTIVE',
-    image: 'img/characters/detective.png',
-    description: 'Investigador astuto que resuelve misterios'
+  maria: {
+    name: 'MARIA',
+    image: 'img/characters/maria.png'
   },
-  cientifico: {
-    name: 'CIENTÍFICO',
-    image: 'img/characters/cientifico.png',
-    description: 'Genio brillante que descubre secretos'
+  aroa: {
+    name: 'AROA',
+    image: 'img/characters/aroa.png'
   },
-  mago: {
-    name: 'MAGO',
-    image: 'img/characters/mago.png',
-    description: 'Mago misterioso con poderes especiales'
+  cristian: {
+    name: 'CRISTIAN',
+    image: 'img/characters/cristian.png'
   }
 };
 
@@ -281,21 +277,18 @@ const showPopup = () => {
   const popup = document.getElementById('popup-container');
   const input = document.getElementById('secret-word-input');
   
-  // Actualizar imágenes y nombres de los jugadores
+  // Actualizar imágenes de los jugadores
   const player1Btn = document.querySelector('.player-select-btn[data-player="1"]');
   const player2Btn = document.querySelector('.player-select-btn[data-player="2"]');
   
   player1Btn.querySelector('img').src = gameState.player1.image;
-  player1Btn.querySelector('.player-select-name').textContent = gameState.player1.name;
-  
   player2Btn.querySelector('img').src = gameState.player2.image;
-  player2Btn.querySelector('.player-select-name').textContent = gameState.player2.name;
   
   // Seleccionar jugador 1 por defecto
   player1Btn.classList.add('selected');
   player2Btn.classList.remove('selected');
   gameState.currentPlayer = gameState.player1;
-  document.getElementById('current-player').textContent = `${gameState.player1.name}, escribe la palabra:`;
+  document.getElementById('current-player').textContent = `${gameState.player1.name}, ESCRIBE TU PALABRA SECRETA`;
   
   // Agregar event listeners para la selección de jugadores
   player1Btn.addEventListener('click', () => selectPlayer(1));
@@ -314,12 +307,12 @@ const selectPlayer = (playerNumber) => {
     player1Btn.classList.add('selected');
     player2Btn.classList.remove('selected');
     gameState.currentPlayer = gameState.player1;
-    document.getElementById('current-player').textContent = `${gameState.player1.name}, escribe la palabra:`;
+    document.getElementById('current-player').textContent = `${gameState.player1.name}, ESCRIBE TU PALABRA SECRETA`;
   } else {
     player2Btn.classList.add('selected');
     player1Btn.classList.remove('selected');
     gameState.currentPlayer = gameState.player2;
-    document.getElementById('current-player').textContent = `${gameState.player2.name}, escribe la palabra:`;
+    document.getElementById('current-player').textContent = `${gameState.player2.name}, ESCRIBE TU PALABRA SECRETA`;
   }
 };
 
@@ -336,7 +329,7 @@ const startMultiGame = () => {
   }
   
   if (!/^[A-ZÑ]+$/.test(secretWord)) {
-    showMobileAlert('Solo letras permitidas');
+    showMobileAlert('Solo se permiten letras');
     return;
   }
   
@@ -597,6 +590,39 @@ const resetGame = () => {
   if (progressCircle) {
     progressCircle.style.strokeDasharray = '';
     progressCircle.style.strokeDashoffset = '';
+  }
+
+  // Reiniciar los selectores de personajes
+  document.querySelectorAll('.character-track').forEach(track => {
+    track.style.transform = 'translateX(0)';
+  });
+
+  // Reiniciar los selectores de dificultad
+  document.querySelectorAll('.difficulty-track').forEach(track => {
+    track.style.transform = 'translateX(0)';
+  });
+
+  // Reiniciar los selectores de tema
+  document.querySelectorAll('.theme-track').forEach(track => {
+    track.style.transform = 'translateX(0)';
+  });
+
+  // Reiniciar los botones de selección de jugador en el popup
+  const player1Btn = document.querySelector('.player-select-btn[data-player="1"]');
+  const player2Btn = document.querySelector('.player-select-btn[data-player="2"]');
+  if (player1Btn && player2Btn) {
+    player1Btn.classList.remove('selected');
+    player2Btn.classList.remove('selected');
+    player1Btn.querySelector('img').src = '';
+    player2Btn.querySelector('img').src = '';
+    player1Btn.querySelector('.player-select-name').textContent = '';
+    player2Btn.querySelector('.player-select-name').textContent = '';
+  }
+
+  // Reiniciar el avatar del jugador
+  const playerAvatar = document.getElementById('player-avatar');
+  if (playerAvatar) {
+    playerAvatar.src = '';
   }
 };
 
