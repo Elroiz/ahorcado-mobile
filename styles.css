@@ -256,19 +256,77 @@ body.mobile-ui {
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow: hidden;
 }
 
 #game-screen {
   background: var(--bg-color);
 }
 
-.timer-circle {
+.game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  width: 100%;
+  background: var(--bg-color);
+  box-shadow: 0 4px 12px var(--shadow-color);
+  position: relative;
+  z-index: 1;
+  height: 90px;
+}
+
+.timer-container {
+  width: 100%;
+  height: 10px;
+  background: var(--bg-color);
   position: absolute;
-  top: 1rem;
-  right: 1rem;
-  width: 60px;
-  height: 60px;
-  z-index: 3;
+  top: 80px;
+  left: 0;
+  z-index: 2;
+  box-shadow: 0 2px 4px var(--shadow-color);
+}
+
+.timer-bar {
+  width: 100%;
+  height: 100%;
+  background: #ddd;
+  position: relative;
+  overflow: hidden;
+}
+
+.timer-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0%;
+  background: var(--wrong-color);
+  transition: width 1s linear;
+}
+
+.hourglass-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 25px;
+  z-index: 1;
+  filter: drop-shadow(2px 2px 4px var(--shadow-color));
+  animation: hourglassRotate 2s ease-in-out infinite;
+}
+
+@keyframes hourglassRotate {
+  0% { transform: translateY(-50%) rotate(3deg); }
+  25% { transform: translateY(-50%) rotate(-2deg); }
+  50% { transform: translateY(-50%) rotate(4deg); }
+  75% { transform: translateY(-50%) rotate(-4deg); }
+  100% { transform: translateY(-50%) rotate(3deg); }
+}
+
+.hourglass-icon.stop-animation {
+  animation: none;
+  transform: translateY(-50%) rotate(0deg);
 }
 
 #hangman-container {
@@ -276,6 +334,8 @@ body.mobile-ui {
   width: 100%;
   height: 275px;
   overflow: hidden;
+  margin-top: 0;
+  z-index: 1;
 }
 
 .ahorcado {
@@ -857,16 +917,6 @@ body.mobile-ui {
 
 .restart-btn:active {
   transform: translateY(4px);
-}
-
-.game-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem;
-  width: 100%;
-  background: var(--bg-color);
-  box-shadow: 0 4px 12px var(--shadow-color);
 }
 
 .player-info {

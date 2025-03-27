@@ -269,18 +269,18 @@
   <!-- Pantalla de Juego -->
   <div id="game-screen" class="screen">
     <div class="game-container">
+      <div class="timer-container">
+        <img src="img/hourglass.png" alt="Reloj de arena" class="hourglass-icon">
+        <div class="timer-bar">
+          <div class="timer-progress"></div>
+        </div>
+      </div>
       <div class="game-header">
         <div class="player-info">
           <img id="player-avatar" src="" alt="Avatar del jugador" class="player-avatar">
           <div class="hint-container">
             <div id="hint-display" class="hint-text"></div>
           </div>
-        </div>
-        <div class="timer-circle">
-          <svg width="60" height="60">
-            <circle class="base-circle" cx="30" cy="30" r="25" />
-            <circle class="progress-circle" cx="30" cy="30" r="25" />
-          </svg>
         </div>
       </div>
       <div id="hangman-container">

@@ -395,13 +395,54 @@ const setupGameElements = (difficultyConfig) => {
 };
 
 const setupTimer = (difficultyConfig) => {
-  const timerCircle = document.querySelector('.timer-circle');
-  if (difficultyConfig.timer > 0) {
-    startTimer();
-    timerCircle.classList.remove('hidden');
-  } else {
-    timerCircle.classList.add('hidden');
+  const timerDisplay = document.querySelector('.timer-progress');
+  const timerContainer = document.querySelector('.timer-container');
+  const hourglassIcon = document.querySelector('.hourglass-icon');
+  if (!timerDisplay || !timerContainer) return;
+  
+  const totalTime = difficultyConfig.timer;
+  
+  // Ocultar el contenedor del temporizador si no hay tiempo límite
+  if (totalTime <= 0) {
+    timerContainer.style.display = 'none';
+    return;
   }
+  
+  // Mostrar el contenedor del temporizador si hay tiempo límite
+  timerContainer.style.display = 'block';
+  
+  // Reiniciar la animación del reloj de arena
+  if (hourglassIcon) {
+    hourglassIcon.classList.remove('stop-animation');
+  }
+  
+  // Limpiar cualquier temporizador existente
+  if (gameState.timer) {
+    clearInterval(gameState.timer);
+  }
+  
+  // Reiniciar el progreso visual
+  timerDisplay.style.width = '0%';
+  
+  // Inicializar el tiempo restante
+  gameState.timeLeft = totalTime;
+  
+  // Crear el temporizador
+  gameState.timer = setInterval(() => {
+    if (!gameState.gameActive) {
+      clearInterval(gameState.timer);
+      return;
+    }
+    
+    gameState.timeLeft--;
+    const progress = ((totalTime - gameState.timeLeft) / totalTime) * 100;
+    timerDisplay.style.width = `${progress}%`;
+    
+    if (gameState.timeLeft <= 0) {
+      clearInterval(gameState.timer);
+      endGame(false);
+    }
+  }, 1000); // Actualizar cada segundo
 };
 
 const handleLetter = letter => {
@@ -439,13 +480,14 @@ const handleWrongLetter = (letter, button) => {
 };
 
 const resetTimer = () => {
+  const timerDisplay = document.querySelector('.timer-progress');
+  const timerContainer = document.querySelector('.timer-container');
+  if (!timerDisplay || !timerContainer) return;
+  
   const difficultyConfig = DIFFICULTY_LEVELS[gameState.difficulty];
   if (difficultyConfig.timer > 0) {
-    if (gameState.timer) {
-      cancelAnimationFrame(gameState.timer);
-    }
+    timerDisplay.style.width = '0%';
     gameState.timeLeft = difficultyConfig.timer;
-    startTimer();
   }
 };
 
@@ -454,7 +496,13 @@ const endGame = win => {
   gameState.gameActive = false;
   
   if (gameState.timer) {
-    cancelAnimationFrame(gameState.timer);
+    clearInterval(gameState.timer);
+  }
+  
+  // Detener la animación del reloj de arena
+  const hourglassIcon = document.querySelector('.hourglass-icon');
+  if (hourglassIcon) {
+    hourglassIcon.classList.add('stop-animation');
   }
   
   // Deshabilitar todos los botones del teclado
@@ -530,7 +578,7 @@ const resetGame = () => {
   
   // Cancelar el temporizador si existe
   if (gameState.timer) {
-    cancelAnimationFrame(gameState.timer);
+    clearInterval(gameState.timer);
   }
   
   // Ocultar todos los popups
@@ -613,10 +661,10 @@ const resetGame = () => {
   if (player1Btn && player2Btn) {
     player1Btn.classList.remove('selected');
     player2Btn.classList.remove('selected');
-    player1Btn.querySelector('img').src = '';
-    player2Btn.querySelector('img').src = '';
-    player1Btn.querySelector('.player-select-name').textContent = '';
-    player2Btn.querySelector('.player-select-name').textContent = '';
+    const player1Img = player1Btn.querySelector('img');
+    const player2Img = player2Btn.querySelector('img');
+    if (player1Img) player1Img.src = '';
+    if (player2Img) player2Img.src = '';
   }
 
   // Reiniciar el avatar del jugador
@@ -624,36 +672,6 @@ const resetGame = () => {
   if (playerAvatar) {
     playerAvatar.src = '';
   }
-};
-
-const startTimer = () => {
-  const startTime = performance.now();
-  const duration = gameState.timeLeft * 1000;
-  
-  const updateTimer = timestamp => {
-    if (!gameState.gameActive) return;
-    
-    const elapsed = timestamp - startTime;
-    const remaining = Math.max(0, duration - elapsed);
-    
-    if (remaining === 0) {
-      endGame(false);
-      return;
-    }
-    
-    const progress = (remaining / duration) * 100;
-    const circle = document.querySelector('.progress-circle');
-    const radius = circle.r.baseVal.value;
-    const circumference = radius * 2 * Math.PI;
-    const offset = circumference - (progress / 100) * circumference;
-    
-    circle.style.strokeDasharray = `${circumference} ${circumference}`;
-    circle.style.strokeDashoffset = offset;
-    
-    gameState.timer = requestAnimationFrame(updateTimer);
-  };
-  
-  gameState.timer = requestAnimationFrame(updateTimer);
 };
 
 // Utilidades
