@@ -21,14 +21,38 @@
   <!-- Imagen de fondo -->
   <div id="bg-image" role="presentation"></div>
 
+  <!-- Menú Inferior -->
+  <nav class="nav-container">
+    <button class="nav-button" id="home-button">
+      <div class="icon">
+        <img src="img/home.png" alt="Inicio">
+      </div>
+      <span class="label">Inicio</span>
+    </button>
+    <button class="nav-button" id="single-player-button">
+      <div class="icon">
+        <img src="img/solo.png" alt="Un Jugador">
+      </div>
+      <span class="label">Un Jugador</span>
+    </button>
+    <button class="nav-button" id="multi-player-button">
+      <div class="icon">
+        <img src="img/multi.png" alt="Dos Jugadores">
+      </div>
+      <span class="label">Dos Jugadores</span>
+    </button>
+    <button class="nav-button" id="score-button">
+      <div class="icon">
+        <img src="img/score.png" alt="Marcador">
+      </div>
+      <span class="label">Marcador</span>
+    </button>
+  </nav>
+
   <!-- Pantalla Principal -->
   <div id="start-screen" class="screen active" role="main">
     <div class="start-content">
       <img src="img/title.png" alt="El Ahorcado" class="title-image">
-      <div class="mode-buttons">
-        <button id="single-player-btn" class="mode-btn" aria-label="Jugar modo individual">I JUGADOR</button>
-        <button id="multi-player-btn" class="mode-btn" aria-label="Jugar modo multijugador">II JUGADORES</button>
-      </div>
     </div>
   </div>
 
@@ -295,7 +319,6 @@
         <div id="word-display"></div>
       </div>
       <div id="keyboard" class="keyboard-container"></div>
-      <button id="restart-button" class="restart-btn">Reiniciar Juego</button>
     </div>
   </div>
 

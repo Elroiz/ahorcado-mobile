@@ -101,13 +101,31 @@ const handleTouchEnd = e => {
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('start-screen').classList.remove('hidden');
   
-  // Event Listeners
-  document.getElementById('single-player-btn').addEventListener('click', () => showConfig('single'));
-  document.getElementById('multi-player-btn').addEventListener('click', () => showConfig('multi'));
+  // Event Listeners del menú
+  document.getElementById('home-button').addEventListener('click', () => {
+    resetGame();
+    updateMenuSelection('home-button');
+  });
+  
+  document.getElementById('single-player-button').addEventListener('click', () => {
+    showConfig('single');
+    updateMenuSelection('single-player-button');
+  });
+  
+  document.getElementById('multi-player-button').addEventListener('click', () => {
+    showConfig('multi');
+    updateMenuSelection('multi-player-button');
+  });
+  
+  document.getElementById('score-button').addEventListener('click', () => {
+    showScoreScreen();
+    updateMenuSelection('score-button');
+  });
+  
+  // Event Listeners existentes
   document.getElementById('start-single-game').addEventListener('click', startSingleGame);
   document.getElementById('next-multi').addEventListener('click', handleMultiPlayerSetup);
   document.getElementById('confirm-word').addEventListener('click', startMultiGame);
-  document.getElementById('restart-button').addEventListener('click', resetGame);
   
   // Gestos táctiles
   document.addEventListener('touchstart', handleTouchStart, false);
@@ -115,6 +133,9 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Configuración inicial
   setupDifficultySlider();
+  
+  // Seleccionar el botón de inicio por defecto
+  updateMenuSelection('home-button');
 });
 
 // Funciones de UI
@@ -846,4 +867,18 @@ const checkGameStatus = () => {
   } else if (gameState.attemptsLeft <= 0) {
     endGame(false);
   }
+};
+
+// Función para actualizar la selección del menú
+const updateMenuSelection = (selectedId) => {
+  document.querySelectorAll('.nav-button').forEach(button => {
+    button.classList.remove('selected');
+  });
+  document.getElementById(selectedId).classList.add('selected');
+};
+
+// Función para mostrar la pantalla de marcador
+const showScoreScreen = () => {
+  // TODO: Implementar la pantalla de marcador
+  showMobileAlert('Próximamente: Pantalla de marcador');
 };

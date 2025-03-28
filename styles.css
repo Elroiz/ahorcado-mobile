@@ -5,7 +5,7 @@
   --wrong-color: #b64b4b;
   --accent-color: #187e4b;
   --text-color: #faeadd;
-  --bg-color: rgba(255, 255, 255, 0.95);
+  --bg-color: #faeadd;
   --shadow-color: rgba(0, 0, 0, 0.2);
   --transition-speed: 0.3s;
   --button-shadow: 3px 8px 2px black;
@@ -50,6 +50,7 @@ body.mobile-ui {
   inset: 0;
   overflow-y: auto;
   transition: opacity var(--transition-speed), transform var(--transition-speed);
+  padding-bottom: 80px;
 }
 
 .screen:not(.active) {
@@ -73,15 +74,30 @@ body.mobile-ui {
 #config-multi {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   opacity: 1;
   transform: translateY(0);
+  height: calc(100vh + 20px);
+  overflow-y: auto;
+}
+
+.config-container {
+  background: var(--bg-color);
+  padding: 20px;
+  width: 100%;
+  max-width: 600px;
+  height: 100vh;
 }
 
 .start-content {
   padding: 20px;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
 }
 
 .title {
@@ -181,14 +197,6 @@ body.mobile-ui {
 }
 
 /* Configuración */
-.config-container {
-  background: var(--bg-color);
-  padding: 20px;
-  border-radius: 15px;
-  margin: 20px;
-  box-shadow: 0 4px 12px var(--shadow-color);
-}
-
 .input-group input,
 .input-group select {
   width: 100%;
@@ -1028,4 +1036,85 @@ body.mobile-ui {
 
 .end-game-btn:active {
   transform: translateY(4px);
+}
+
+.nav-container {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: 80px;
+  background: transparent;
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  z-index: 100;
+  filter: drop-shadow(3px 8px 2px black) saturate(0.6);
+}
+
+.nav-button {
+  position: relative;
+  flex: 1;
+  height: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  background: #9b5c2e;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.nav-button .icon {
+  position: absolute;
+  bottom: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  transform: translateY(50%);
+}
+
+.nav-button .icon img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.nav-button.selected {
+  flex: 1.6;
+  height: 90px;
+  margin-bottom: -10px;
+  border-radius: 5px 5px 0px 0px;
+}
+
+.nav-button.selected .icon {
+  width: 55px;
+  height: 55px;
+  bottom: 95%;
+}
+
+.nav-button.selected .icon img {
+  width: 55px;
+  height: 55px;
+}
+
+.nav-button .label {
+  position: absolute;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  font-family: 'Bubblegum Sans', cursive;
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.nav-button.selected .label {
+  color: whitesmoke;
+  font-size: 1rem;
+  opacity: 1;
+  transform: translateY(0);
+  text-transform: uppercase;
 }
