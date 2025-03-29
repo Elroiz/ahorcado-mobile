@@ -8,7 +8,7 @@
   --bg-color: #faeadd;
   --shadow-color: rgba(0, 0, 0, 0.2);
   --transition-speed: 0.3s;
-  --button-shadow: 3px 8px 2px black;
+  --button-shadow: 2px 4px 3px black;
   --button-shadow-pressed: 0px 2px 0px black;
 }
 
@@ -71,13 +71,14 @@ body.mobile-ui {
 /* Contenedores de Pantalla */
 #start-screen,
 #config-single,
-#config-multi {
+#config-multi,
+#score-screen {
   opacity: 1;
   height: calc(100vh + 80px);
   overflow-y: auto;
 }
 
-.config-container {
+.general-container {
   background: var(--bg-color);
   padding: 20px;
   padding-bottom: 120px;
@@ -86,7 +87,8 @@ body.mobile-ui {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: space-evenly;
+  justify-content: flex-start;
+  gap: 1rem;
 }
 
 .start-content {
@@ -104,14 +106,6 @@ body.mobile-ui {
   color: var(--secondary-color);
   text-shadow: 2px 2px 4px var(--shadow-color);
   margin: 20px 0;
-}
-
-#single-player-title,
-#multi-player-title {
-  font-size: 1.8rem;
-  color: var(--secondary-color);
-  text-shadow: 2px 2px 4px var(--shadow-color);
-  margin: 20px 0;
   text-align: center;
 }
 
@@ -121,7 +115,7 @@ body.mobile-ui {
   height: auto;
   margin-bottom: 2rem;
   object-fit: contain;
-  filter: drop-shadow(0px 21px 6px black);
+  filter: drop-shadow(var(--button-shadow));
   animation: fadeInDown 1s ease-out;
 }
 
@@ -149,7 +143,7 @@ body.mobile-ui {
   color: whitesmoke;
   position: relative;
   overflow: hidden;
-  filter: drop-shadow(3px 6px 2px black);
+  filter: drop-shadow(var(--button-shadow));
   animation: scaleIn 0.5s ease-out both;
   background-color: #7c4711;
   border-radius: 5px;
@@ -192,7 +186,7 @@ body.mobile-ui {
 
 .difficulty-btn.selected {
   color: var(--text-color);
-  filter: drop-shadow(2px 2px 0px black);
+  filter: drop-shadow(var(--button-shadow-pressed));
 }
 
 /* Configuración */
@@ -319,7 +313,7 @@ body.mobile-ui {
   transform: translateY(-50%);
   width: 25px;
   z-index: 1;
-  filter: drop-shadow(2px 2px 4px var(--shadow-color));
+  filter: drop-shadow(var(--button-shadow));
   animation: hourglassRotate 2s ease-in-out infinite;
 }
 
@@ -471,7 +465,7 @@ body.mobile-ui {
   background: var(--accent-color);
   color: whitesmoke;
   border-color: var(--accent-color);
-  filter: drop-shadow(2px 4px 2px black);
+  filter: drop-shadow(var(--button-shadow-pressed));
   translate: 2px 2px;
 }
 
@@ -479,7 +473,7 @@ body.mobile-ui {
   background: var(--wrong-color);
   color: whitesmoke;
   border-color: var(--wrong-color);
-  filter: drop-shadow(2px 4px 2px black);
+  filter: drop-shadow(var(--button-shadow-pressed));
   translate: 2px 2px;
 }
 
@@ -672,7 +666,7 @@ body.mobile-ui {
   padding: 0.5rem;
   transition: all 0.2s ease;
   position: relative;
-  filter: drop-shadow(3px 8px 2px black);
+  filter: drop-shadow(var(--button-shadow));
 }
 
 .character-btn img {
@@ -686,7 +680,7 @@ body.mobile-ui {
 }
 
 .character-btn.selected {
-  filter: drop-shadow(2px 2px 0px black);
+  filter: drop-shadow(var(--button-shadow-pressed));
 }
 
 .character-btn.disabled {
@@ -797,7 +791,7 @@ body.mobile-ui {
   border-radius: 50%;
   object-fit: cover;
   border: 3px solid var(--primary-color);
-  filter: drop-shadow(3px 8px 2px black)
+  filter: drop-shadow(var(--button-shadow));
 }
 
 .theme-image-container img {
@@ -808,7 +802,7 @@ body.mobile-ui {
   border-radius: 50%;
   object-fit: cover;
   border: 3px solid var(--primary-color);
-  filter: drop-shadow(3px 8px 2px black)
+  filter: drop-shadow(var(--button-shadow));
 }
 
 .difficulty-image-container img {
@@ -819,7 +813,7 @@ body.mobile-ui {
   border-radius: 50%;
   object-fit: cover;
   border: 3px solid var(--primary-color);
-  filter: drop-shadow(3px 8px 2px black)
+  filter: drop-shadow(var(--button-shadow));
 }
 
 .theme-name,
@@ -871,7 +865,39 @@ body.mobile-ui {
   transform: translateY(4px);
 }
 
+.score-list {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: space-around;
+  gap: 2rem;
+}
+
+.score-rows {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+
+.total {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.score-details {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
 .player-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-direction: column;
+}
+
+.player-score {
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -883,7 +909,7 @@ body.mobile-ui {
   border-radius: 50%;
   object-fit: cover;
   border: 3px solid var(--primary-color);
-  box-shadow: 0 4px 8px var(--shadow-color);
+  filter: drop-shadow(var(--button-shadow));
 }
 
 .hint-container {
@@ -973,7 +999,7 @@ body.mobile-ui {
   color: whitesmoke;
   position: relative;
   overflow: hidden;
-  filter: drop-shadow(3px 6px 2px black);
+  filter: drop-shadow(var(--button-shadow));
   animation: scaleIn 0.5s ease-out both;
   background-color: #7c4711;
   border-radius: 5px;
@@ -993,7 +1019,7 @@ body.mobile-ui {
   justify-content: space-around;
   align-items: flex-end;
   z-index: 100;
-  filter: drop-shadow(3px 8px 2px black);
+  filter: drop-shadow(var(--button-shadow));
   gap: 2px;
 }
 

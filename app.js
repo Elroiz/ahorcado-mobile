@@ -1,9 +1,9 @@
 // Constantes y Configuración
 const DIFFICULTY_LEVELS = {
-  0: { name: "Fácil", fails: 10, timer: 0, startImage: 0 },
-  25: { name: "Normal", fails: 8, timer: 35, startImage: 2 },
-  50: { name: "Difícil", fails: 6, timer: 25, startImage: 4 },
-  100: { name: "Extremo", fails: 4, timer: 15, startImage: 6 }
+  0: { name: "Fácil", fails: 10, timer: 0, startImage: 0, points: 1 },
+  25: { name: "Normal", fails: 8, timer: 35, startImage: 2, points: 2 },
+  50: { name: "Difícil", fails: 6, timer: 25, startImage: 4, points: 5 },
+  100: { name: "Extremo", fails: 4, timer: 15, startImage: 6, points: 10 }
 };
 
 const DIFFICULTY_ORDER = [0, 25, 50, 100];
@@ -74,7 +74,37 @@ const gameState = {
   player1: null,
   player2: null,
   currentPlayer: null,
-  selectedTheme: "aleatorio"
+  selectedTheme: "aleatorio",
+  scores: {
+    player1: {
+      easy: 0,
+      normal: 0,
+      hard: 0,
+      extreme: 0,
+      total: 0
+    },
+    player2: {
+      easy: 0,
+      normal: 0,
+      hard: 0,
+      extreme: 0,
+      total: 0
+    },
+    player3: {
+      easy: 0,
+      normal: 0,
+      hard: 0,
+      extreme: 0,
+      total: 0
+    },
+    player4: {
+      easy: 0,
+      normal: 0,
+      hard: 0,
+      extreme: 0,
+      total: 0
+    }
+  }
 };
 
 // Gestión de eventos táctiles
@@ -222,9 +252,11 @@ const setupDifficultySlider = () => {
 const updateDifficultyConfig = (difficulty) => {
   gameState.difficulty = difficulty;
   const config = DIFFICULTY_LEVELS[difficulty];
-  gameState.maxFails = config.fails;
-  gameState.timer = config.timer;
-  gameState.startImage = config.startImage;
+  if (config) {
+    gameState.maxFails = config.fails;
+    gameState.timer = config.timer;
+    gameState.startImage = config.startImage;
+  }
 };
 
 const setupCharacterSlider = () => {
@@ -520,6 +552,12 @@ const endGame = win => {
     clearInterval(gameState.timer);
   }
   
+  // Actualizar puntuaciones si el jugador ganó
+  if (win) {
+    const playerKey = gameState.currentPlayer === gameState.player1 ? 'player1' : 'player2';
+    updateScores(playerKey, gameState.difficulty, true);
+  }
+  
   // Detener la animación del reloj de arena
   const hourglassIcon = document.querySelector('.hourglass-icon');
   if (hourglassIcon) {
@@ -577,11 +615,14 @@ const showEndGamePopup = (message) => {
 };
 
 const resetGame = () => {
+  // No reiniciar las puntuaciones
+  const scores = gameState.scores;
+  
   // Reiniciar el estado del juego
   Object.assign(gameState, {
     mode: null,
     players: [],
-    difficulty: 50, // Dificultad por defecto
+    difficulty: DIFFICULTY_LEVELS.NORMAL,
     secretWord: "",
     guessedLetters: [],
     wrongLetters: [],
@@ -594,7 +635,8 @@ const resetGame = () => {
     player1: null,
     player2: null,
     currentPlayer: null,
-    selectedTheme: "aleatorio"
+    selectedTheme: "aleatorio",
+    scores // Mantener las puntuaciones existentes
   });
   
   // Cancelar el temporizador si existe
@@ -879,6 +921,97 @@ const updateMenuSelection = (selectedId) => {
 
 // Función para mostrar la pantalla de marcador
 const showScoreScreen = () => {
-  // TODO: Implementar la pantalla de marcador
-  showMobileAlert('Próximamente: Pantalla de marcador');
+  const scoreScreen = document.getElementById('score-screen');
+  const scoreList = document.querySelector('.score-list');
+  
+  if (!scoreScreen || !scoreList) {
+    console.error('No se encontraron los elementos necesarios para mostrar el marcador');
+    return;
+  }
+  
+  // Cargar puntuaciones guardadas
+  loadScores();
+  
+  // Crear el HTML para mostrar las puntuaciones
+  let scoreHTML = '';
+  
+  // Mostrar los cuatro personajes
+  Object.entries(CHARACTERS).forEach(([key, character]) => {
+    const playerKey = key === 'daniel' ? 'player1' : 
+                     key === 'maria' ? 'player2' : 
+                     key === 'aroa' ? 'player3' : 'player4';
+    
+    scoreHTML += `
+      <div class="player-score">
+        <div class="player-info">
+          <img src="${character.image}" alt="${character.name}" class="player-avatar">
+          <div class="player-name">${character.name}</div>
+        </div>
+          <div class="score-details">
+            <div class="score-rows">
+              <div class="score-row">
+                <span class="difficulty-label">Fácil:</span>
+                <span class="score-value">${gameState.scores[playerKey]?.easy || 0}</span>
+              </div>
+              <div class="score-row">
+                <span class="difficulty-label">Normal:</span>
+                <span class="score-value">${gameState.scores[playerKey]?.normal || 0}</span>
+              </div>
+              <div class="score-row">
+                <span class="difficulty-label">Difícil:</span>
+                <span class="score-value">${gameState.scores[playerKey]?.hard || 0}</span>
+              </div>
+              <div class="score-row">
+                <span class="difficulty-label">Extremo:</span>
+                <span class="score-value">${gameState.scores[playerKey]?.extreme || 0}</span>
+              </div>
+            </div>
+            <div class="total">
+              <span class="difficulty-label">TOTAL:</span>
+              <span class="score-value">${gameState.scores[playerKey]?.total || 0}</span>
+            </div>
+          </div>
+      </div>
+    `;
+  });
+  
+  scoreList.innerHTML = scoreHTML;
+  
+  // Ocultar todas las pantallas
+  document.querySelectorAll('.screen').forEach(screen => {
+    screen.classList.add('hidden', 'active');
+  });
+  
+  // Mostrar la pantalla de marcador
+  scoreScreen.classList.remove('hidden');
+  requestAnimationFrame(() => scoreScreen.classList.add('active'));
 };
+
+// Función para actualizar puntuaciones
+function updateScores(player, difficulty, won) {
+  if (!won) return;
+  
+  const difficultyKey = Object.keys(DIFFICULTY_LEVELS).find(
+    key => DIFFICULTY_LEVELS[key].value === difficulty
+  ).toLowerCase();
+  
+  const points = DIFFICULTY_LEVELS[difficultyKey].points;
+  gameState.scores[player][difficultyKey] += points;
+  gameState.scores[player].total += points;
+  
+  // Guardar en localStorage
+  saveScores();
+}
+
+// Función para guardar puntuaciones en localStorage
+function saveScores() {
+  localStorage.setItem('hangmanScores', JSON.stringify(gameState.scores));
+}
+
+// Función para cargar puntuaciones desde localStorage
+function loadScores() {
+  const savedScores = localStorage.getItem('hangmanScores');
+  if (savedScores) {
+    gameState.scores = JSON.parse(savedScores);
+  }
+}

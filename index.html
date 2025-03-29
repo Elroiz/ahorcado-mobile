@@ -58,8 +58,8 @@
 
   <!-- Configuración 1 Jugador -->
   <div id="config-single" class="screen hidden" role="dialog" aria-labelledby="single-player-title">
-    <div class="config-container">
-      <h2 id="single-player-title">MODO INDIVIDUAL</h2>
+    <div class="general-container">
+      <h2 class="title">MODO INDIVIDUAL</h2>
       <div class="input-group">
         <legend>ELEGIR PERSONAJE</legend>
         <div class="character-container">
@@ -207,8 +207,8 @@
 
   <!-- Configuración 2 Jugadores -->
   <div id="config-multi" class="screen hidden" role="dialog" aria-labelledby="multi-player-title">
-    <div class="config-container">
-      <h2 id="multi-player-title">MULTIJUGADOR</h2>
+    <div class="general-container">
+      <h2 class="title">MULTIJUGADOR</h2>
       <div class="input-group">
         <legend>JUGADOR I</legend>
         <div class="character-container">
@@ -379,6 +379,22 @@
         <div id="word-display"></div>
       </div>
       <div id="keyboard" class="keyboard-container"></div>
+    </div>
+  </div>
+
+  <div id="end-screen" class="screen">
+    <div class="general-container">
+      <div class="end-game-message"></div>
+      <div class="end-game-buttons"></div>
+    </div>
+  </div>
+
+  <div id="score-screen" class="screen">
+    <div class="general-container">
+      <h2 class="title">MARCADOR</h2>
+      <div class="score-list">
+        <!-- Aquí se insertarán dinámicamente las puntuaciones -->
+      </div>
     </div>
   </div>
 
