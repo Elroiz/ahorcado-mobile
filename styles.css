@@ -18,6 +18,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body.mobile-ui {
@@ -543,66 +544,10 @@ body.mobile-ui {
 }
 
 /* Slider de Dificultad */
-.difficulty-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  width: 100%;
-  max-width: 400px;
-  margin: 1.1rem auto;
-}
-
-.nav-btn {
-  width: 35px;
-  height: 35px;
-  padding: 0;
-  border: none;
-  background: url('img/left.png') center/contain no-repeat;
-  cursor: pointer;
-  transition: all 0.1s ease;
-  position: relative;
-  z-index: 2;
-  flex-shrink: 0;
-  filter: drop-shadow(var(--button-shadow)) saturate(var(--button-saturation));
-}
-
-.nav-btn.right-btn {
-  background-image: url('img/right.png');
-}
-
-.nav-btn:active {
-  transform: translateY(4px);
-  filter: drop-shadow(var(--button-shadow-pressed)) saturate(var(--button-saturation));
-}
-
-.difficulty-slider {
-  width: 165px;
-  overflow: hidden;
-  position: relative;
-  filter: drop-shadow(3px 8px 2px black) saturate(0.6);
-}
-
 .difficulty-track {
   display: flex;
   transition: transform 0.5s ease-in-out;
   width: 100%;
-}
-
-.difficulty-slide {
-  flex: 0 0 100%;
-  min-width: 100%;
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: url('img/button_02.png') center/contain no-repeat;
-  font-family: 'Bubblegum Sans', cursive;
-  font-size: 1.2rem;
-  color: var(--text-color);
-  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
-  user-select: none;
-  pointer-events: none;
 }
 
 .difficulty-display {
@@ -804,7 +749,8 @@ body.mobile-ui {
 
 /* Sliders */
 .character-container,
-.theme-container {
+.theme-container,
+.difficulty-container {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -815,25 +761,29 @@ body.mobile-ui {
 }
 
 .character-slider,
-.theme-slider {
-  width: 165px;
+.theme-slider,
+.difficulty-slider {
+  width: 250px;
   overflow: hidden;
   position: relative;
 }
 
 .character-track,
-.theme-track {
+.theme-track,
+.difficulty-track {
   display: flex;
   transition: transform 0.5s ease-in-out;
   width: 100%;
 }
 
-.character-slide {
+.character-slide,
+.theme-slide,
+.difficulty-slide {
   flex: 0 0 100%;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   padding: 1rem;
   min-height: 120px;
   position: relative;
@@ -842,8 +792,8 @@ body.mobile-ui {
 }
 
 .character-image-container img {
-  width: 100px;
-  height: 100px;
+  width: 65px;
+  height: 65px;
   position: relative;
   z-index: 1;
   border-radius: 50%;
@@ -853,8 +803,8 @@ body.mobile-ui {
 }
 
 .theme-image-container img {
-  width: 100px;
-  height: 100px;
+  width: 65px;
+  height: 65px;
   position: relative;
   z-index: 1;
   border-radius: 50%;
@@ -863,24 +813,22 @@ body.mobile-ui {
   filter: drop-shadow(3px 8px 2px black) saturate(0.6);
 }
 
-.theme-slide {
-  flex: 0 0 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-  min-height: 120px;
+.difficulty-image-container img {
+  width: 65px;
+  height: 65px;
   position: relative;
-  pointer-events: none;
-  gap: 1rem;
+  z-index: 1;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--primary-color);
+  filter: drop-shadow(3px 8px 2px black) saturate(0.6)
 }
 
 .theme-name,
-.character-name {
+.character-name,
+.difficulty-name {
   font-family: 'Bubblegum Sans', cursive;
-  font-size: 1.1rem;
-  color: black;
+  font-size: 1.3rem;
   text-transform: uppercase;
   white-space: nowrap;
 }
@@ -1060,7 +1008,7 @@ body.mobile-ui {
   cursor: pointer;
   transition: all 0.3s ease;
   border: none;
-  background: #9b5c2e;
+  background: #7c4711;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -1087,6 +1035,7 @@ body.mobile-ui {
   height: 90px;
   margin-bottom: -10px;
   border-radius: 5px 5px 0px 0px;
+  border: 5px solid #f1f1f1;
 }
 
 .nav-button.selected .icon {
@@ -1115,4 +1064,28 @@ body.mobile-ui {
   opacity: 1;
   transform: translateY(0);
   text-transform: uppercase;
+  margin-top: 12px;
+}
+
+.nav-btn {
+  width: 35px;
+  height: 35px;
+  padding: 0;
+  border: none;
+  background: url('img/left.png') center/contain no-repeat;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+  filter: drop-shadow(var(--button-shadow)) saturate(var(--button-saturation));
+}
+
+.nav-btn.right-btn {
+  background-image: url('img/right.png');
+}
+
+.nav-btn:active {
+  transform: translateY(4px);
+  filter: drop-shadow(var(--button-shadow-pressed)) saturate(var(--button-saturation));
 }
