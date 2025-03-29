@@ -10,7 +10,6 @@
   --transition-speed: 0.3s;
   --button-shadow: 3px 8px 2px black;
   --button-shadow-pressed: 0px 2px 0px black;
-  --button-saturation: 0.6;
 }
 
 /* Reset y Estilos Base */
@@ -73,22 +72,21 @@ body.mobile-ui {
 #start-screen,
 #config-single,
 #config-multi {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
   opacity: 1;
-  transform: translateY(0);
-  height: calc(100vh + 20px);
+  height: calc(100vh + 80px);
   overflow-y: auto;
 }
 
 .config-container {
   background: var(--bg-color);
   padding: 20px;
+  padding-bottom: 120px;
   width: 100%;
   max-width: 600px;
   height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
 }
 
 .start-content {
@@ -123,7 +121,7 @@ body.mobile-ui {
   height: auto;
   margin-bottom: 2rem;
   object-fit: contain;
-  filter: drop-shadow(0px 21px 6px black) saturate(0.9);
+  filter: drop-shadow(0px 21px 6px black);
   animation: fadeInDown 1s ease-out;
 }
 
@@ -148,13 +146,13 @@ body.mobile-ui {
   cursor: pointer;
   transition: all 0.2s ease;
   font-family: 'Bubblegum Sans', cursive;
-  background: url('img/button_01.png') center/contain no-repeat;
-  color: var(--text-color);
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  color: whitesmoke;
   position: relative;
   overflow: hidden;
-  filter: drop-shadow(3px 6px 2px black) saturate(0.6);
+  filter: drop-shadow(3px 6px 2px black);
   animation: scaleIn 0.5s ease-out both;
+  background-color: #7c4711;
+  border-radius: 5px;
 }
 
 .mode-btn:nth-child(1) {
@@ -194,7 +192,7 @@ body.mobile-ui {
 
 .difficulty-btn.selected {
   color: var(--text-color);
-  filter: drop-shadow(2px 2px 0px black) saturate(0.6);
+  filter: drop-shadow(2px 2px 0px black);
 }
 
 /* Configuración */
@@ -205,7 +203,7 @@ body.mobile-ui {
   font-size: 1.1rem;
   border: 2px solid var(--primary-color);
   border-radius: 10px;
-  background: white;
+  background: whitesmoke;
   text-align: center;
 }
 
@@ -229,7 +227,7 @@ body.mobile-ui {
 }
 
 .popup {
-  background: white;
+  background: whitesmoke;
   padding: 25px;
   border-radius: 15px;
   width: 85%;
@@ -456,8 +454,8 @@ body.mobile-ui {
   height: 35px;
   font-size: 1.3rem;
   border: 2px solid var(--primary-color);
-  border-radius: 8px;
-  background: white;
+  border-radius: 5px;
+  background: whitesmoke;
   color: var(--secondary-color);
   cursor: pointer;
   transition: all 0.2s;
@@ -471,7 +469,7 @@ body.mobile-ui {
 
 #keyboard button.correct {
   background: var(--accent-color);
-  color: white;
+  color: whitesmoke;
   border-color: var(--accent-color);
   filter: drop-shadow(2px 4px 2px black);
   translate: 2px 2px;
@@ -479,7 +477,7 @@ body.mobile-ui {
 
 #keyboard button.incorrect {
   background: var(--wrong-color);
-  color: white;
+  color: whitesmoke;
   border-color: var(--wrong-color);
   filter: drop-shadow(2px 4px 2px black);
   translate: 2px 2px;
@@ -511,7 +509,7 @@ body.mobile-ui {
   top: 20px;
   left: 50%;
   transform: translateX(-50%) translateY(-100%);
-  background: var(--bg-color);
+  background: whitesmoke;
   color: black;
   padding: 1rem 2rem;
   border-radius: 15px;
@@ -520,7 +518,7 @@ body.mobile-ui {
   box-shadow: 0 4px 12px var(--shadow-color);
   text-align: center;
   min-width: 200px;
-  max-width: 90%;
+  width: 75%;
   animation: slideDown 0.3s ease-out forwards, fadeOut 0.3s ease-in 2.7s forwards;
   text-transform: uppercase;
 }
@@ -674,7 +672,7 @@ body.mobile-ui {
   padding: 0.5rem;
   transition: all 0.2s ease;
   position: relative;
-  filter: drop-shadow(3px 8px 2px black) saturate(0.6);
+  filter: drop-shadow(3px 8px 2px black);
 }
 
 .character-btn img {
@@ -688,7 +686,7 @@ body.mobile-ui {
 }
 
 .character-btn.selected {
-  filter: drop-shadow(2px 2px 0px black) saturate(0.8);
+  filter: drop-shadow(2px 2px 0px black);
 }
 
 .character-btn.disabled {
@@ -799,7 +797,7 @@ body.mobile-ui {
   border-radius: 50%;
   object-fit: cover;
   border: 3px solid var(--primary-color);
-  filter: drop-shadow(3px 8px 2px black) saturate(0.6)
+  filter: drop-shadow(3px 8px 2px black)
 }
 
 .theme-image-container img {
@@ -810,7 +808,7 @@ body.mobile-ui {
   border-radius: 50%;
   object-fit: cover;
   border: 3px solid var(--primary-color);
-  filter: drop-shadow(3px 8px 2px black) saturate(0.6);
+  filter: drop-shadow(3px 8px 2px black)
 }
 
 .difficulty-image-container img {
@@ -821,7 +819,7 @@ body.mobile-ui {
   border-radius: 50%;
   object-fit: cover;
   border: 3px solid var(--primary-color);
-  filter: drop-shadow(3px 8px 2px black) saturate(0.6)
+  filter: drop-shadow(3px 8px 2px black)
 }
 
 .theme-name,
@@ -965,19 +963,20 @@ body.mobile-ui {
 }
 
 .end-game-btn {
-  background: url('img/button_02.png') center/contain no-repeat;
+  -webkit-tap-highlight-color: transparent;
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
   border: none;
-  color: var(--text-color);
-  padding: 0.8rem 1.1rem;
-  font-size: 1rem;
   cursor: pointer;
-  font-family: inherit;
-  text-shadow: 2px 2px 4px var(--shadow-color);
-  transition: transform 0.2s ease;
-  min-width: 120px;
-  text-transform: uppercase;
-  width: 50%;
-  min-height: 53px;
+  transition: all 0.2s ease;
+  font-family: 'Bubblegum Sans', cursive;
+  color: whitesmoke;
+  position: relative;
+  overflow: hidden;
+  filter: drop-shadow(3px 6px 2px black);
+  animation: scaleIn 0.5s ease-out both;
+  background-color: #7c4711;
+  border-radius: 5px;
 }
 
 .end-game-btn:active {
@@ -994,7 +993,8 @@ body.mobile-ui {
   justify-content: space-around;
   align-items: flex-end;
   z-index: 100;
-  filter: drop-shadow(3px 8px 2px black) saturate(0.6);
+  filter: drop-shadow(3px 8px 2px black);
+  gap: 2px;
 }
 
 .nav-button {
@@ -1010,6 +1010,7 @@ body.mobile-ui {
   border: none;
   background: #7c4711;
   -webkit-tap-highlight-color: transparent;
+  border-radius: 5px;
 }
 
 .nav-button .icon {
@@ -1033,9 +1034,8 @@ body.mobile-ui {
 .nav-button.selected {
   flex: 1.6;
   height: 90px;
-  margin-bottom: -10px;
-  border-radius: 5px 5px 0px 0px;
-  border: 5px solid #f1f1f1;
+  border-radius: 5px;
+  border: 1px solid #f1f1f1;
 }
 
 .nav-button.selected .icon {
@@ -1078,7 +1078,7 @@ body.mobile-ui {
   position: relative;
   z-index: 2;
   flex-shrink: 0;
-  filter: drop-shadow(var(--button-shadow)) saturate(var(--button-saturation));
+  filter: drop-shadow(var(--button-shadow));
 }
 
 .nav-btn.right-btn {
@@ -1087,5 +1087,5 @@ body.mobile-ui {
 
 .nav-btn:active {
   transform: translateY(4px);
-  filter: drop-shadow(var(--button-shadow-pressed)) saturate(var(--button-saturation));
+  filter: drop-shadow(var(--button-shadow-pressed));
 }
