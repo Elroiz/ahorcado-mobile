@@ -10,32 +10,14 @@ const DIFFICULTY_ORDER = [0, 25, 50, 100];
 
 const WORD_LIST = [
   { word: "BOSQUE", hint: "Área densamente poblada de árboles", theme: "Naturaleza" },
-  { word: "MONTAÑA", hint: "Elevación natural de terreno", theme: "Naturaleza" },
-  { word: "GEISER", hint: "Fuente termal que emite agua caliente y vapor", theme: "Naturaleza" },
-  { word: "DEMOCRACIA", hint: "Sistema político basado en el gobierno del pueblo", theme: "Historia y Política" },
-  { word: "DICTADURA", hint: "Gobierno autoritario ejercido por una sola persona", theme: "Historia y Política" },
-  { word: "MONARQUIA", hint: "Forma de gobierno liderada por un rey o reina", theme: "Historia y Política" },
-  { word: "PINTURA", hint: "Arte de representar imágenes con colores", theme: "Arte y Cultura" },
-  { word: "ESCULTURA", hint: "Obra de arte tridimensional", theme: "Arte y Cultura" },
-  { word: "CINE", hint: "Lugar para ver películas", theme: "Arte y Cultura" },
-  { word: "DUENDE", hint: "Criatura mágica pequeña", theme: "Mitología y Fantasía" },
-  { word: "VAMPIRO", hint: "Criatura de la noche que se alimenta de sangre", theme: "Mitología y Fantasía" },
-  { word: "ZOMBIE", hint: "Muerto viviente", theme: "Mitología y Fantasía" },
-  { word: "QUIMICA", hint: "Ciencia que estudia las sustancias y sus transformaciones", theme: "Ciencia y Tecnología" },
-  { word: "FISICA", hint: "Ciencia que estudia la naturaleza y sus fenómenos", theme: "Ciencia y Tecnología" },
-  { word: "BIOLOGIA", hint: "Ciencia que estudia los seres vivos", theme: "Ciencia y Tecnología" },
-  { word: "JUPITER", hint: "Planeta más grande del sistema solar", theme: "Astronomía" },
-  { word: "URANO", hint: "Planeta con un eje de rotación inclinado", theme: "Astronomía" },
-  { word: "NEPTUNO", hint: "Planeta más alejado del Sol", theme: "Astronomía" },
-  { word: "BRILLO", hint: "Producto cosmético que da luminosidad a los labios", theme: "Moda y complementos" },
-  { word: "RIMEL", hint: "Producto cosmético para oscurecer y alargar las pestañas", theme: "Moda y complementos" },
-  { word: "SOMBRA", hint: "Producto cosmético para colorear los párpados", theme: "Moda y complementos" },
-  { word: "KIT", hint: "Conjunto de piezas para una reparación o mejora", theme: "Mundo del motor" },
-  { word: "LUBRICANTE", hint: "Producto que reduce fricción en el motor", theme: "Mundo del motor" },
-  { word: "MANILLAR", hint: "Parte de la moto para dirigir la dirección", theme: "Mundo del motor" },
-  { word: "TIRO", hint: "Acción de lanzar el balón hacia la portería", theme: "Deportes" },
-  { word: "FALTA", hint: "Infracción cometida durante el juego", theme: "Deportes" },
-  { word: "SANCION", hint: "Castigo impuesto por una falta", theme: "Deportes" }
+  { word: "CASTILLO", hint: "Fortaleza medieval con torres", theme: "Historia y Política" },
+  { word: "MUSICA", hint: "Arte de combinar sonidos", theme: "Arte y Cultura" },
+  { word: "DRAGON", hint: "Criatura mitológica que escupe fuego", theme: "Mitología y Fantasía" },
+  { word: "CIENCIA", hint: "Conjunto de conocimientos sobre el mundo", theme: "Ciencia y Tecnología" },
+  { word: "COMETA", hint: "Cuerpo celeste con cola luminosa", theme: "Astronomía" },
+  { word: "VESTIDO", hint: "Prenda de ropa que cubre el cuerpo entero", theme: "Moda y complementos" },
+  { word: "ACELERADOR", hint: "Pedal que controla la velocidad del motor", theme: "Mundo del motor" },
+  { word: "BALONMANO", hint: "Deporte de equipo jugado con una pelota y porterías", theme: "Deportes" }
 ];
 
 const CHARACTERS = {
@@ -61,49 +43,29 @@ const CHARACTERS = {
 const gameState = {
   mode: null,
   players: [],
-  difficulty: 50,
-  secretWord: "",
+  singleConfig: {
+    difficulty: 50,
+    selectedTheme: "aleatorio"
+  },
+  multiConfig: {
+    difficulty: 50
+  },
+  secretWord: '',
   guessedLetters: [],
   wrongLetters: [],
   attemptsLeft: 0,
   timer: null,
   timeLeft: 0,
-  hint: "",
-  gameActive: true,
-  gameEnded: false,
+  hint: '',
+  gameActive: false,
   player1: null,
   player2: null,
   currentPlayer: null,
-  selectedTheme: "aleatorio",
   scores: {
-    player1: {
-      easy: 0,
-      normal: 0,
-      hard: 0,
-      extreme: 0,
-      total: 0
-    },
-    player2: {
-      easy: 0,
-      normal: 0,
-      hard: 0,
-      extreme: 0,
-      total: 0
-    },
-    player3: {
-      easy: 0,
-      normal: 0,
-      hard: 0,
-      extreme: 0,
-      total: 0
-    },
-    player4: {
-      easy: 0,
-      normal: 0,
-      hard: 0,
-      extreme: 0,
-      total: 0
-    }
+    daniel: { easy: 0, normal: 0, hard: 0, extreme: 0, total: 0 },
+    maria: { easy: 0, normal: 0, hard: 0, extreme: 0, total: 0 },
+    aroa: { easy: 0, normal: 0, hard: 0, extreme: 0, total: 0 },
+    cristian: { easy: 0, normal: 0, hard: 0, extreme: 0, total: 0 }
   }
 };
 
@@ -129,27 +91,61 @@ const handleTouchEnd = e => {
 
 // Inicialización del juego
 document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('start-screen').classList.remove('hidden');
+  showStartScreen();
   
   // Event Listeners del menú
   document.getElementById('home-button').addEventListener('click', () => {
-    resetGame();
-    updateMenuSelection('home-button');
+    if (gameState.gameActive) {
+      showConfirmDialog('¿Estás seguro de que quieres volver al inicio?<br>Se perderá la partida actual.', () => {
+        resetGameState();
+        showStartScreen();
+        updateMenuSelection('home-button');
+      });
+    } else {
+      resetGameState();
+      showStartScreen();
+      updateMenuSelection('home-button');
+    }
   });
   
   document.getElementById('single-player-button').addEventListener('click', () => {
-    showConfig('single');
-    updateMenuSelection('single-player-button');
+    if (gameState.gameActive) {
+      showConfirmDialog('¿Estás seguro de que quieres cambiar al modo un jugador?<br>Se perderá la partida actual.', () => {
+        resetGameState();
+        showConfig('single');
+        updateMenuSelection('single-player-button');
+      });
+    } else {
+      resetGameState();
+      showConfig('single');
+      updateMenuSelection('single-player-button');
+    }
   });
   
   document.getElementById('multi-player-button').addEventListener('click', () => {
-    showConfig('multi');
-    updateMenuSelection('multi-player-button');
+    if (gameState.gameActive) {
+      showConfirmDialog('¿Estás seguro de que quieres cambiar al modo dos jugadores?<br>Se perderá la partida actual.', () => {
+        resetGameState();
+        showConfig('multi');
+        updateMenuSelection('multi-player-button');
+      });
+    } else {
+      resetGameState();
+      showConfig('multi');
+      updateMenuSelection('multi-player-button');
+    }
   });
   
   document.getElementById('score-button').addEventListener('click', () => {
-    showScoreScreen();
-    updateMenuSelection('score-button');
+    if (gameState.gameActive) {
+      showConfirmDialog('¿Estás seguro de que quieres ver el marcador?<br>Se perderá la partida actual.', () => {
+        showScoreScreen();
+        updateMenuSelection('score-button');
+      });
+    } else {
+      showScoreScreen();
+      updateMenuSelection('score-button');
+    }
   });
   
   // Event Listeners existentes
@@ -170,25 +166,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Funciones de UI
 const showConfig = mode => {
+  resetAllSelectors();
+  
+  // Ocultar todas las pantallas
   document.querySelectorAll('.screen').forEach(screen => {
-    screen.classList.remove('active', 'hidden');
+    screen.classList.add('hidden', 'active');
   });
   
+  // Mostrar la pantalla de configuración correspondiente
   const configScreen = document.getElementById(`config-${mode}`);
+  if (!configScreen) {
+    console.error(`No se encontró la pantalla de configuración para el modo ${mode}`);
+    return;
+  }
+  
   configScreen.classList.remove('hidden');
   requestAnimationFrame(() => configScreen.classList.add('active'));
   
-  // Configurar todos los sliders
-  setupDifficultySlider();
-  setupCharacterSlider();
-  setupThemeSlider();
+  // Actualizar el modo y cargar la configuración correspondiente
+  gameState.mode = mode;
+  if (mode === 'single') {
+    gameState.difficulty = gameState.singleConfig.difficulty;
+    gameState.selectedTheme = gameState.singleConfig.selectedTheme;
+    setupThemeSlider();
+  } else {
+    gameState.difficulty = gameState.multiConfig.difficulty;
+  }
+  
+  setupDifficultySlider(mode);
 };
 
 const createSlider = (container, options) => {
   const leftBtn = container.querySelector('.left-btn');
   const rightBtn = container.querySelector('.right-btn');
   const track = container.querySelector(options.trackClass);
-  const slides = container.querySelectorAll(options.slideClass);
+  const slides = track.querySelectorAll(options.slideClass);
   
   let currentIndex = 0;
   let isAnimating = false;
@@ -230,33 +242,43 @@ const createSlider = (container, options) => {
   rightBtn.addEventListener('click', () => updateSlide(1));
 };
 
-const setupDifficultySlider = () => {
+// Configuración del slider de dificultad
+const setupDifficultySlider = (mode) => {
   const containers = document.querySelectorAll('.difficulty-container');
   
   containers.forEach(container => {
     createSlider(container, {
-      trackClass: '.difficulty-track',
+      trackClass: '.difficulty-slider .difficulty-track',
       slideClass: '.difficulty-slide',
       onInit: (slide, index) => {
         const difficulty = parseInt(slide.dataset.difficulty);
-        updateDifficultyConfig(difficulty);
+        // Guardar en la configuración correspondiente
+        if (mode === 'single') {
+          gameState.singleConfig.difficulty = difficulty;
+        } else {
+          gameState.multiConfig.difficulty = difficulty;
+        }
+        updateDifficultyDisplay(difficulty);
       },
       onUpdate: (slide, index) => {
         const difficulty = parseInt(slide.dataset.difficulty);
-        updateDifficultyConfig(difficulty);
+        // Actualizar configuración según modo
+        if (mode === 'single') {
+          gameState.singleConfig.difficulty = difficulty;
+        } else {
+          gameState.multiConfig.difficulty = difficulty;
+        }
+        updateDifficultyDisplay(difficulty);
       }
     });
   });
 };
 
-const updateDifficultyConfig = (difficulty) => {
-  gameState.difficulty = difficulty;
-  const config = DIFFICULTY_LEVELS[difficulty];
-  if (config) {
-    gameState.maxFails = config.fails;
-    gameState.timer = config.timer;
-    gameState.startImage = config.startImage;
-  }
+// Función auxiliar para actualizar display
+const updateDifficultyDisplay = (difficulty) => {
+  document.querySelectorAll('.difficulty-name').forEach(element => {
+    element.textContent = DIFFICULTY_LEVELS[difficulty].name.toUpperCase();
+  });
 };
 
 const setupCharacterSlider = () => {
@@ -293,6 +315,7 @@ const updateCharacterSelection = (container, character) => {
   }
 };
 
+// Configuración del slider de tema
 const setupThemeSlider = () => {
   const containers = document.querySelectorAll('.theme-container');
   
@@ -386,6 +409,10 @@ const startMultiGame = () => {
     return;
   }
   
+  // Resetear el estado del juego antes de inicializar
+  resetGameState();
+  
+  // Configurar la palabra secreta
   gameState.secretWord = secretWord;
   
   // El jugador que escribió la palabra será el que adivina
@@ -402,23 +429,30 @@ const startMultiGame = () => {
 };
 
 const initializeGame = () => {
-  const difficultyConfig = DIFFICULTY_LEVELS[gameState.difficulty];
-  
-  // Inicializar estado del juego
-  Object.assign(gameState, {
-    attemptsLeft: difficultyConfig.fails,
-    guessedLetters: Array(gameState.secretWord.length).fill('_'),
-    wrongLetters: [],
-    timeLeft: difficultyConfig.timer,
-    gameActive: true,
-    gameEnded: false
-  });
+  // Obtener dificultad según modo actual
+  const currentDifficulty = gameState.mode === 'single' 
+    ? gameState.singleConfig.difficulty 
+    : gameState.multiConfig.difficulty;
 
+  const difficultyConfig = DIFFICULTY_LEVELS[currentDifficulty];
+  if (!difficultyConfig) {
+    console.error('Configuración de dificultad no encontrada:', currentDifficulty);
+    return;
+  }
+
+  // Inicializar estado del juego
+  gameState.guessedLetters = Array(gameState.secretWord.length).fill('_');
+  gameState.wrongLetters = [];
+  gameState.attemptsLeft = difficultyConfig.fails;
+  gameState.gameActive = true;
+  
+  // Configurar elementos del juego
+  setupGameElements(difficultyConfig);
+  setupTimer(difficultyConfig);
+  setupHintButton();
+  
   // Actualizar UI
   updateGameUI();
-  setupGameElements(difficultyConfig);
-  
-  // Actualizar imagen del jugador que adivina
   updateCurrentPlayerAvatar();
 };
 
@@ -545,18 +579,27 @@ const resetTimer = () => {
 };
 
 const endGame = win => {
-  gameState.gameEnded = true;
   gameState.gameActive = false;
   
   if (gameState.timer) {
     clearInterval(gameState.timer);
   }
   
-  // Actualizar puntuaciones si el jugador ganó
-  if (win) {
-    const playerKey = gameState.currentPlayer === gameState.player1 ? 'player1' : 'player2';
-    updateScores(playerKey, gameState.difficulty, true);
+  // Obtener clave exacta del personaje
+  const getCharacterKey = (currentPlayer) => {
+    return Object.keys(CHARACTERS).find(key => 
+      CHARACTERS[key].name === currentPlayer.name
+    );
+  };
+  
+  const playerKey = getCharacterKey(gameState.currentPlayer);
+  if (!playerKey) {
+    console.error('No se encontró la clave del personaje para:', gameState.currentPlayer.name);
+    return;
   }
+
+  // Pasar dificultad numérica real (0, 25, 50, 100)
+  updateScores(playerKey, gameState.difficulty, win);
   
   // Detener la animación del reloj de arena
   const hourglassIcon = document.querySelector('.hourglass-icon');
@@ -577,8 +620,8 @@ const endGame = win => {
   
   // Mostrar mensaje en el popup de fin de partida
   const message = win ? 
-    `¡Felicidades ${gameState.currentPlayer.name}! Has ganado.` :
-    `¡Game Over! La palabra era: ${gameState.secretWord}`;
+    `¡FELICIDADES ${gameState.currentPlayer.name}! HAS GANADO.` :
+    `¡GAME OVER! LA PALABRA ERA: ${gameState.secretWord}`;
     
   showEndGamePopup(message);
   
@@ -604,7 +647,7 @@ const showEndGamePopup = (message) => {
   nextRoundBtn.onclick = () => {
     popup.classList.add('hidden');
     if (gameState.mode === 'multi') {
-      showPopup(); // Mostrar popup para introducir palabra en modo multijugador
+      showPopup();
     } else {
       gameState.secretWord = getRandomWord();
       initializeGame();
@@ -615,125 +658,38 @@ const showEndGamePopup = (message) => {
 };
 
 const resetGame = () => {
-  // No reiniciar las puntuaciones
-  const scores = gameState.scores;
-  
-  // Reiniciar el estado del juego
-  Object.assign(gameState, {
-    mode: null,
-    players: [],
-    difficulty: DIFFICULTY_LEVELS.NORMAL,
-    secretWord: "",
-    guessedLetters: [],
-    wrongLetters: [],
-    attemptsLeft: 0,
-    timer: null,
-    timeLeft: 0,
-    hint: "",
-    gameActive: true,
-    gameEnded: false,
-    player1: null,
-    player2: null,
-    currentPlayer: null,
-    selectedTheme: "aleatorio",
-    scores // Mantener las puntuaciones existentes
-  });
-  
-  // Cancelar el temporizador si existe
-  if (gameState.timer) {
-    clearInterval(gameState.timer);
-  }
-  
-  // Ocultar todos los popups
-  document.getElementById('popup-container').classList.add('hidden');
-  document.getElementById('end-game-popup').classList.add('hidden');
-  
   // Ocultar todas las pantallas
   document.querySelectorAll('.screen').forEach(screen => {
     screen.classList.add('hidden', 'active');
   });
-  
-  // Mostrar la pantalla de inicio
-  const startScreen = document.getElementById('start-screen');
-  startScreen.classList.remove('hidden');
-  requestAnimationFrame(() => startScreen.classList.add('active'));
-  
-  // Limpiar el input de palabra secreta
-  const secretWordInput = document.getElementById('secret-word-input');
-  if (secretWordInput) {
-    secretWordInput.value = '';
-  }
-  
-  // Limpiar el display de la palabra
-  const wordDisplay = document.getElementById('word-display');
-  if (wordDisplay) {
-    wordDisplay.textContent = '';
-  }
-  
-  // Limpiar el display de la pista
-  const hintDisplay = document.getElementById('hint-display');
-  if (hintDisplay) {
-    hintDisplay.textContent = '';
-  }
-  
-  // Limpiar el contenedor del ahorcado
-  const hangmanContainer = document.getElementById('hangman-container');
-  if (hangmanContainer) {
-    hangmanContainer.innerHTML = '';
-  }
-  
-  // Limpiar el teclado
-  const keyboard = document.getElementById('keyboard');
-  if (keyboard) {
-    keyboard.innerHTML = '';
-  }
-  
-  // Habilitar el botón de pista si existe
-  const hintButton = document.getElementById('hint-button');
-  if (hintButton) {
-    hintButton.disabled = false;
-    hintButton.style.opacity = '1';
-    hintButton.style.display = 'none';
-  }
-  
-  // Reiniciar el temporizador visual
-  const progressCircle = document.querySelector('.progress-circle');
-  if (progressCircle) {
-    progressCircle.style.strokeDasharray = '';
-    progressCircle.style.strokeDashoffset = '';
+
+  // Ocultar el diálogo de fin de juego
+  const gameEndDialog = document.getElementById('game-end-dialog');
+  if (gameEndDialog) {
+    gameEndDialog.classList.add('hidden');
   }
 
-  // Reiniciar los selectores de personajes
-  document.querySelectorAll('.character-track').forEach(track => {
-    track.style.transform = 'translateX(0)';
+  // Limpiar la selección de personajes
+  clearCharacterSelection();
+
+  // Resetear solo los parámetros de la partida actual
+  Object.assign(gameState, {
+    players: [],
+    secretWord: '',
+    guessedLetters: [],
+    wrongLetters: [],
+    attemptsLeft: 0,
+    timeLeft: 0,
+    hint: '',
+    gameActive: false,
+    currentPlayer: null
   });
 
-  // Reiniciar los selectores de dificultad
-  document.querySelectorAll('.difficulty-track').forEach(track => {
-    track.style.transform = 'translateX(0)';
-  });
-
-  // Reiniciar los selectores de tema
-  document.querySelectorAll('.theme-track').forEach(track => {
-    track.style.transform = 'translateX(0)';
-  });
-
-  // Reiniciar los botones de selección de jugador en el popup
-  const player1Btn = document.querySelector('.player-select-btn[data-player="1"]');
-  const player2Btn = document.querySelector('.player-select-btn[data-player="2"]');
-  if (player1Btn && player2Btn) {
-    player1Btn.classList.remove('selected');
-    player2Btn.classList.remove('selected');
-    const player1Img = player1Btn.querySelector('img');
-    const player2Img = player2Btn.querySelector('img');
-    if (player1Img) player1Img.src = '';
-    if (player2Img) player2Img.src = '';
-  }
-
-  // Reiniciar el avatar del jugador
-  const playerAvatar = document.getElementById('player-avatar');
-  if (playerAvatar) {
-    playerAvatar.src = '';
+  // Mostrar la pantalla de configuración correspondiente
+  if (gameState.mode === 'single') {
+    showConfig('single');
+  } else if (gameState.mode === 'multi') {
+    showConfig('multi');
   }
 };
 
@@ -937,45 +893,61 @@ const showScoreScreen = () => {
   
   // Mostrar los cuatro personajes
   Object.entries(CHARACTERS).forEach(([key, character]) => {
-    const playerKey = key === 'daniel' ? 'player1' : 
-                     key === 'maria' ? 'player2' : 
-                     key === 'aroa' ? 'player3' : 'player4';
-    
     scoreHTML += `
       <div class="player-score">
         <div class="player-info">
           <img src="${character.image}" alt="${character.name}" class="player-avatar">
           <div class="player-name">${character.name}</div>
         </div>
-          <div class="score-details">
-            <div class="score-rows">
-              <div class="score-row">
-                <span class="difficulty-label">Fácil:</span>
-                <span class="score-value">${gameState.scores[playerKey]?.easy || 0}</span>
-              </div>
-              <div class="score-row">
-                <span class="difficulty-label">Normal:</span>
-                <span class="score-value">${gameState.scores[playerKey]?.normal || 0}</span>
-              </div>
-              <div class="score-row">
-                <span class="difficulty-label">Difícil:</span>
-                <span class="score-value">${gameState.scores[playerKey]?.hard || 0}</span>
-              </div>
-              <div class="score-row">
-                <span class="difficulty-label">Extremo:</span>
-                <span class="score-value">${gameState.scores[playerKey]?.extreme || 0}</span>
-              </div>
+        <div class="score-details">
+          <div class="score-rows">
+            <div class="score-row">
+              <span class="difficulty-label">Fácil:</span>
+              <span class="score-value">${gameState.scores[key].easy}</span>
             </div>
-            <div class="total">
-              <span class="difficulty-label">TOTAL:</span>
-              <span class="score-value">${gameState.scores[playerKey]?.total || 0}</span>
+            <div class="score-row">
+              <span class="difficulty-label">Normal:</span>
+              <span class="score-value">${gameState.scores[key].normal}</span>
+            </div>
+            <div class="score-row">
+              <span class="difficulty-label">Difícil:</span>
+              <span class="score-value">${gameState.scores[key].hard}</span>
+            </div>
+            <div class="score-row">
+              <span class="difficulty-label">Extremo:</span>
+              <span class="score-value">${gameState.scores[key].extreme}</span>
             </div>
           </div>
+          <div class="total">
+            <span class="difficulty-label">TOTAL:</span>
+            <span class="score-value">${gameState.scores[key].total}</span>
+          </div>
+        </div>
       </div>
     `;
   });
   
+  // Añadir el botón de reset al final
+  scoreHTML += `
+    <div class="reset-scores-container">
+      <button id="reset-scores-button" class="reset-scores-button">
+        Resetear Puntuaciones
+      </button>
+    </div>
+  `;
+  
   scoreList.innerHTML = scoreHTML;
+  
+  // Añadir el event listener al botón de reset
+  const resetButton = document.getElementById('reset-scores-button');
+  if (resetButton) {
+    resetButton.addEventListener('click', () => {
+      showConfirmDialog(
+        '¿Estás seguro de que quieres resetear todas las puntuaciones?\nEsta acción no se puede deshacer.',
+        resetAllScores
+      );
+    });
+  }
   
   // Ocultar todas las pantallas
   document.querySelectorAll('.screen').forEach(screen => {
@@ -988,30 +960,266 @@ const showScoreScreen = () => {
 };
 
 // Función para actualizar puntuaciones
-function updateScores(player, difficulty, won) {
+function updateScores(playerKey, difficulty, won) {
   if (!won) return;
+
+  // 1. Obtener configuración exacta de la dificultad
+  const difficultyConfig = DIFFICULTY_LEVELS[difficulty];
+  if (!difficultyConfig) {
+    console.error('Configuración de dificultad no encontrada:', difficulty);
+    return;
+  }
+
+  // 2. Mapear nombre de dificultad a claves consistentes
+  const difficultyMap = {
+    'fácil': 'easy',
+    'normal': 'normal',
+    'difícil': 'hard',
+    'extremo': 'extreme'
+  };
+
+  // 3. Obtener clave de dificultad desde el nombre localizado
+  const difficultyKey = difficultyMap[difficultyConfig.name.toLowerCase()];
+  if (!difficultyKey) {
+    console.error('Clave de dificultad no encontrada para:', difficultyConfig.name);
+    return;
+  }
+
+  // 4. Asignación precisa de puntos según dificultad
+  const points = {
+    easy: 1,
+    normal: 3,
+    hard: 6,
+    extreme: 10
+  }[difficultyKey];
+
+  if (!points) {
+    console.error('Puntos no encontrados para la dificultad:', difficultyKey);
+    return;
+  }
+
+  // 5. Actualizar puntuaciones
+  if (!gameState.scores[playerKey]) {
+    gameState.scores[playerKey] = {
+      easy: 0,
+      normal: 0,
+      hard: 0,
+      extreme: 0,
+      total: 0
+    };
+  }
+
+  gameState.scores[playerKey][difficultyKey] += points;
+  gameState.scores[playerKey].total += points;
   
-  const difficultyKey = Object.keys(DIFFICULTY_LEVELS).find(
-    key => DIFFICULTY_LEVELS[key].value === difficulty
-  ).toLowerCase();
+  // Debug para verificar los puntos asignados
+  console.log(`Puntos asignados a ${playerKey}:`, {
+    dificultad: difficultyConfig.name,
+    clave: difficultyKey,
+    puntos: points,
+    total: gameState.scores[playerKey].total
+  });
   
-  const points = DIFFICULTY_LEVELS[difficultyKey].points;
-  gameState.scores[player][difficultyKey] += points;
-  gameState.scores[player].total += points;
-  
-  // Guardar en localStorage
   saveScores();
 }
 
 // Función para guardar puntuaciones en localStorage
 function saveScores() {
-  localStorage.setItem('hangmanScores', JSON.stringify(gameState.scores));
+  try {
+    localStorage.setItem('hangmanScores', JSON.stringify(gameState.scores));
+  } catch (error) {
+    console.error('Error al guardar puntuaciones:', error);
+  }
 }
 
 // Función para cargar puntuaciones desde localStorage
 function loadScores() {
   const savedScores = localStorage.getItem('hangmanScores');
   if (savedScores) {
-    gameState.scores = JSON.parse(savedScores);
+    try {
+      const parsedScores = JSON.parse(savedScores);
+      // Migrar datos antiguos si es necesario
+      Object.keys(CHARACTERS).forEach(key => {
+        if (parsedScores[key]) {
+          gameState.scores[key] = parsedScores[key];
+        }
+      });
+    } catch (error) {
+      console.error('Error al cargar puntuaciones:', error);
+    }
   }
 }
+
+const showCharacterScreen = () => {
+  // Ocultar todas las pantallas
+  document.querySelectorAll('.screen').forEach(screen => {
+    screen.classList.add('hidden', 'active');
+  });
+
+  // Mostrar la pantalla de configuración single
+  const configScreen = document.getElementById('config-single');
+  configScreen.classList.remove('hidden');
+  requestAnimationFrame(() => configScreen.classList.add('active'));
+};
+
+const showMultiPlayerConfig = () => {
+  // Ocultar todas las pantallas
+  document.querySelectorAll('.screen').forEach(screen => {
+    screen.classList.add('hidden', 'active');
+  });
+
+  // Mostrar la pantalla de configuración multi
+  const configScreen = document.getElementById('config-multi');
+  configScreen.classList.remove('hidden');
+  requestAnimationFrame(() => configScreen.classList.add('active'));
+};
+
+// Función para mostrar diálogo de confirmación
+const showConfirmDialog = (message, onConfirm) => {
+  const dialog = document.createElement('div');
+  dialog.className = 'confirm-dialog';
+  dialog.innerHTML = `
+    <div class="confirm-content">
+      <p>${message}</p>
+      <div class="confirm-buttons">
+        <button class="confirm-btn cancel">CANCELAR</button>
+        <button class="confirm-btn confirm">CONFIRMAR</button>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(dialog);
+  
+  dialog.querySelector('.cancel').onclick = () => {
+    dialog.remove();
+  };
+  
+  dialog.querySelector('.confirm').onclick = () => {
+    dialog.remove();
+    onConfirm();
+  };
+};
+
+// Función para resetear el juego completamente
+const resetGameState = () => {
+  // Guardar información que no queremos perder
+  const mode = gameState.mode;
+  const players = gameState.players;
+  const player1 = gameState.player1;
+  const player2 = gameState.player2;
+  const currentPlayer = gameState.currentPlayer;
+  
+  // Cargar puntuaciones guardadas o usar valores por defecto
+  loadScores();
+  
+  // Resetear el estado
+  Object.assign(gameState, {
+    difficulty: 50,
+    secretWord: "",
+    guessedLetters: [],
+    wrongLetters: [],
+    attemptsLeft: 0,
+    timer: null,
+    timeLeft: 0,
+    hint: "",
+    gameActive: false,
+    selectedTheme: "aleatorio"
+  });
+  
+  // Restaurar información preservada
+  gameState.mode = mode;
+  gameState.players = players;
+  gameState.player1 = player1;
+  gameState.player2 = player2;
+  gameState.currentPlayer = currentPlayer;
+};
+
+// Función para mostrar la pantalla de inicio
+const showStartScreen = () => {
+  // Ocultar todas las pantallas
+  document.querySelectorAll('.screen').forEach(screen => {
+    screen.classList.add('hidden', 'active');
+  });
+  
+  const startScreen = document.getElementById('start-screen');
+  
+  // Remover la clase active si existe
+  startScreen.classList.remove('active');
+  
+  // Mostrar la pantalla
+  startScreen.classList.remove('hidden');
+  
+  // Forzar un reflow para asegurar que la animación se ejecute
+  startScreen.offsetHeight;
+  
+  // Añadir la clase active después de un pequeño delay
+  requestAnimationFrame(() => {
+    startScreen.classList.add('active');
+  });
+};
+
+// Función para limpiar la selección de personajes
+const clearCharacterSelection = () => {
+  // Limpiar el estado de los personajes
+  gameState.player1 = null;
+  gameState.player2 = null;
+  gameState.currentPlayer = null;
+  
+  // Limpiar las imágenes de los personajes seleccionados
+  const player1Img = document.querySelector('.player-select-btn[data-player="1"] img');
+  const player2Img = document.querySelector('.player-select-btn[data-player="2"] img');
+  if (player1Img) player1Img.src = '';
+  if (player2Img) player2Img.src = '';
+  
+  // Remover la clase selected de los botones
+  document.querySelectorAll('.player-select-btn').forEach(btn => {
+    btn.classList.remove('selected');
+  });
+  
+  // Resetear los tracks de personajes
+  document.querySelectorAll('.character-track').forEach(track => {
+    track.style.transform = 'translateX(0)';
+  });
+};
+
+// Función para reiniciar todos los selectores
+const resetAllSelectors = () => {
+  // Reiniciar selectores de dificultad
+  document.querySelectorAll('.difficulty-track').forEach(track => {
+    track.style.transform = 'translateX(0)';
+  });
+  
+  // Reiniciar selectores de tema
+  document.querySelectorAll('.theme-track').forEach(track => {
+    track.style.transform = 'translateX(0)';
+  });
+  
+  // Reiniciar selectores de personajes
+  document.querySelectorAll('.character-track').forEach(track => {
+    track.style.transform = 'translateX(0)';
+  });
+  
+  // Resetear valores por defecto
+  gameState.difficulty = 50;
+  gameState.selectedTheme = "aleatorio";
+};
+
+// Función para resetear todas las puntuaciones
+const resetAllScores = () => {
+  // Resetear puntuaciones a 0
+  Object.keys(gameState.scores).forEach(player => {
+    gameState.scores[player] = {
+      easy: 0,
+      normal: 0,
+      hard: 0,
+      extreme: 0,
+      total: 0
+    };
+  });
+  
+  // Guardar en localStorage
+  saveScores();
+  
+  // Actualizar la pantalla de marcador
+  showScoreScreen();
+};
