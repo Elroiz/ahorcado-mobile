@@ -291,10 +291,31 @@ const showConfig = mode => {
       gameState.singleConfig.difficulty = 25;
       gameState.singleConfig.selectedTheme = "aleatorio";
       gameState.singleConfig.selectedPlayer = CHARACTERS.daniel;
+      
+      // Actualizar posición del slider de personaje
+      const characterTrack = configScreen.querySelector('.character-track');
+      if (characterTrack) {
+        const slideWidth = characterTrack.querySelector('.character-slide').offsetWidth;
+        characterTrack.style.transform = 'translateX(0)';
+      }
     } else {
       gameState.multiConfig.difficulty = 25;
       gameState.multiConfig.player1 = CHARACTERS.daniel;
       gameState.multiConfig.player2 = CHARACTERS.maria;
+      
+      // Actualizar posición de los sliders de personajes
+      const player1Track = configScreen.querySelector('#player1-container .character-track');
+      const player2Track = configScreen.querySelector('#player2-container .character-track');
+      
+      if (player1Track) {
+        const slideWidth = player1Track.querySelector('.character-slide').offsetWidth;
+        player1Track.style.transform = 'translateX(0)';
+      }
+      
+      if (player2Track) {
+        const slideWidth = player2Track.querySelector('.character-slide').offsetWidth;
+        player2Track.style.transform = `translateX(-${slideWidth}px)`;
+      }
     }
   }
   
@@ -427,6 +448,26 @@ const createCharacterSlider = (container, options) => {
   updateSlidePosition();
 };
 
+// Función auxiliar para actualizar display
+const updateDifficultyDisplay = (difficulty, mode) => {
+  // Seleccionar solo los elementos dentro del contenedor del modo actual
+  const container = document.getElementById(`config-${mode}`);
+  if (!container) return;
+  
+  const difficultyTrack = container.querySelector('.difficulty-track');
+  if (!difficultyTrack) return;
+  
+  const slideWidth = container.querySelector('.difficulty-slide').offsetWidth;
+  const slides = container.querySelectorAll('.difficulty-slide');
+  const currentIndex = Array.from(slides).findIndex(slide => 
+    parseInt(slide.dataset.difficulty) === difficulty
+  );
+  
+  if (currentIndex !== -1) {
+    difficultyTrack.style.transform = `translateX(-${currentIndex * slideWidth}px)`;
+  }
+};
+
 // Configuración del slider de dificultad
 const setupDifficultySlider = (mode) => {
   const containers = document.querySelectorAll('.difficulty-container');
@@ -444,7 +485,7 @@ const setupDifficultySlider = (mode) => {
         } else {
           gameState.multiConfig.difficulty = difficulty;
         }
-        updateDifficultyDisplay(difficulty);
+        updateDifficultyDisplay(difficulty, mode);
       },
       onUpdate: (slide, index) => {
         const difficulty = parseInt(slide.dataset.difficulty);
@@ -454,16 +495,9 @@ const setupDifficultySlider = (mode) => {
         } else {
           gameState.multiConfig.difficulty = difficulty;
         }
-        updateDifficultyDisplay(difficulty);
+        updateDifficultyDisplay(difficulty, mode);
       }
     });
-  });
-};
-
-// Función auxiliar para actualizar display
-const updateDifficultyDisplay = (difficulty) => {
-  document.querySelectorAll('.difficulty-name').forEach(element => {
-    element.textContent = DIFFICULTY_LEVELS[difficulty].name.toUpperCase();
   });
 };
 
@@ -499,13 +533,6 @@ const setupCharacterSlider = (mode) => {
             gameState.multiConfig.player1 = characterData;
           }
         }
-        
-        // Actualizar visualización
-        const avatarContainer = container.querySelector('.character-image-container img');
-        if (avatarContainer) {
-          avatarContainer.src = characterData.image;
-          avatarContainer.alt = characterData.name;
-        }
       },
       onUpdate: (slide, index) => {
         const character = slide.dataset.character;
@@ -520,13 +547,6 @@ const setupCharacterSlider = (mode) => {
           } else {
             gameState.multiConfig.player1 = characterData;
           }
-        }
-        
-        // Actualizar visualización
-        const avatarContainer = container.querySelector('.character-image-container img');
-        if (avatarContainer) {
-          avatarContainer.src = characterData.image;
-          avatarContainer.alt = characterData.name;
         }
       }
     });
@@ -558,10 +578,12 @@ const setupThemeSlider = () => {
       slideClass: '.theme-slide',
       initialValue: 'aleatorio',
       onInit: (slide, index) => {
-        gameState.selectedTheme = slide.dataset.theme;
+        gameState.singleConfig.selectedTheme = slide.dataset.theme;
+        console.log('Tema inicial seleccionado:', gameState.singleConfig.selectedTheme);
       },
       onUpdate: (slide, index) => {
-        gameState.selectedTheme = slide.dataset.theme;
+        gameState.singleConfig.selectedTheme = slide.dataset.theme;
+        console.log('Tema actualizado:', gameState.singleConfig.selectedTheme);
       }
     });
   });
@@ -783,24 +805,26 @@ const setupTimer = (difficultyConfig) => {
   // Inicializar el tiempo restante
   gameState.timeLeft = totalTime;
   
-  // Crear el temporizador
-  gameState.timer = setInterval(() => {
-    if (!gameState.gameActive) {
-      clearInterval(gameState.timer);
-      gameState.timer = null;
-      return;
-    }
-    
-    gameState.timeLeft--;
-    const progress = ((totalTime - gameState.timeLeft) / totalTime) * 100;
-    timerDisplay.style.width = `${progress}%`;
-    
-    if (gameState.timeLeft <= 0) {
-      clearInterval(gameState.timer);
-      gameState.timer = null;
-      endGame(false);
-    }
-  }, 1000);
+  // Crear el temporizador solo si hay tiempo límite
+  if (totalTime > 0) {
+    gameState.timer = setInterval(() => {
+      if (!gameState.gameActive) {
+        clearInterval(gameState.timer);
+        gameState.timer = null;
+        return;
+      }
+      
+      gameState.timeLeft--;
+      const progress = ((totalTime - gameState.timeLeft) / totalTime) * 100;
+      timerDisplay.style.width = `${progress}%`;
+      
+      if (gameState.timeLeft <= 0) {
+        clearInterval(gameState.timer);
+        gameState.timer = null;
+        endGame(false);
+      }
+    }, 1000);
+  }
 };
 
 const resetTimer = () => {
@@ -936,9 +960,10 @@ const showEndGamePopup = (message) => {
       gameScreen.classList.remove('active');
     }
     
-    const currentMode = gameState.mode;
-    resetGameState();
-    gameState.mode = currentMode;
+    // Resetear a valores por defecto
+    gameState.singleConfig.difficulty = 25;
+    gameState.singleConfig.selectedTheme = "aleatorio";
+    gameState.singleConfig.selectedPlayer = CHARACTERS.daniel;
     
     if (gameState.mode === 'single') {
       showConfig('single');
@@ -959,7 +984,19 @@ const showEndGamePopup = (message) => {
     if (gameState.mode === 'multi') {
       showPopup();
     } else {
-      gameState.secretWord = selectWord().word;
+      // Mantener el tema seleccionado y seleccionar una nueva palabra
+      const wordData = selectWord(gameState.singleConfig.selectedTheme);
+      if (!wordData) {
+        console.error('No se pudo seleccionar una palabra');
+        return;
+      }
+      
+      gameState.secretWord = wordData.word;
+      gameState.hint = wordData.hint;
+      
+      console.log('Nueva palabra seleccionada:', gameState.secretWord);
+      console.log('Nueva pista:', gameState.hint);
+      
       initializeGame();
     }
   };
@@ -1025,6 +1062,7 @@ const startSingleGame = () => {
   console.log('Iniciando juego individual');
   console.log('Dificultad seleccionada:', gameState.singleConfig.difficulty);
   console.log('Jugador seleccionado:', gameState.singleConfig.selectedPlayer.name);
+  console.log('Tema seleccionado:', gameState.singleConfig.selectedTheme);
   
   // Resetear el estado del juego
   resetGameState();
@@ -1041,6 +1079,7 @@ const startSingleGame = () => {
   
   console.log('Palabra seleccionada:', gameState.secretWord);
   console.log('Pista:', gameState.hint);
+  console.log('Tema de la palabra:', wordData.theme);
   
   // Configurar el jugador actual como el jugador seleccionado
   gameState.currentPlayer = gameState.singleConfig.selectedPlayer;
@@ -1055,6 +1094,8 @@ const selectWord = (theme = "aleatorio") => {
   
   if (theme !== "aleatorio") {
     filteredWords = wordList.filter(word => word.theme === theme);
+    console.log(`Filtrando palabras por tema: ${theme}`);
+    console.log(`Palabras encontradas: ${filteredWords.length}`);
   }
   
   if (filteredWords.length === 0) {
@@ -1066,6 +1107,7 @@ const selectWord = (theme = "aleatorio") => {
   const selectedWord = filteredWords[randomIndex];
   
   console.log('Palabra seleccionada:', selectedWord);
+  console.log('Tema de la palabra:', selectedWord.theme);
   return selectedWord;
 };
 
@@ -1388,34 +1430,58 @@ const showConfirmDialog = (message, onConfirm) => {
 
 // Función para resetear el juego completamente
 const resetGameState = () => {
+  // Preservar las puntuaciones y el modo actual
   const scores = { ...gameState.scores };
   const currentMode = gameState.mode;
-  const currentSingleConfig = { ...gameState.singleConfig };
-  const currentMultiConfig = { ...gameState.multiConfig };
   
-  const isNextRound = document.getElementById('next-round-btn')?.classList.contains('active');
+  // Preservar la configuración según el modo
+  let currentSingleConfig = null;
+  let currentMultiConfig = null;
   
+  if (currentMode === 'single') {
+    currentSingleConfig = {
+      difficulty: gameState.singleConfig.difficulty,
+      selectedTheme: gameState.singleConfig.selectedTheme,
+      selectedPlayer: gameState.singleConfig.selectedPlayer
+    };
+  } else if (currentMode === 'multi') {
+    currentMultiConfig = {
+      difficulty: gameState.multiConfig.difficulty,
+      player1: gameState.multiConfig.player1,
+      player2: gameState.multiConfig.player2
+    };
+  }
+  
+  // Limpiar el temporizador si existe
+  if (gameState.timer) {
+    clearInterval(gameState.timer);
+    gameState.timer = null;
+  }
+  
+  // Resetear el estado del juego manteniendo la configuración
   Object.assign(gameState, {
     mode: currentMode,
     players: [],
-    singleConfig: currentSingleConfig,
-    multiConfig: currentMultiConfig,
+    singleConfig: currentSingleConfig || {
+      difficulty: 25,
+      selectedTheme: "aleatorio",
+      selectedPlayer: CHARACTERS.daniel
+    },
+    multiConfig: currentMultiConfig || {
+      difficulty: 25,
+      player1: CHARACTERS.daniel,
+      player2: CHARACTERS.maria
+    },
     secretWord: '',
     guessedLetters: [],
     wrongLetters: [],
     attemptsLeft: 0,
-    timer: null,
     timeLeft: 0,
     hint: '',
     gameActive: false,
     currentPlayer: null,
     scores
   });
-
-  if (gameState.timer) {
-    clearInterval(gameState.timer);
-    gameState.timer = null;
-  }
 };
 
 // Función para mostrar la pantalla de inicio
