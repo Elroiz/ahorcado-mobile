@@ -1184,18 +1184,17 @@ const resetKeyboard = () => {
   const keyboard = document.getElementById('keyboard');
   keyboard.innerHTML = '';
   
-  const letters = 'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ'.split('');
+  // Definir las filas del teclado QWERTY
   const rows = [
-    letters.slice(0, 7),    // Primera fila: A-G
-    letters.slice(7, 14),   // Segunda fila: H-N
-    letters.slice(14, 21),  // Tercera fila: O-U
-    letters.slice(21, 27)   // Cuarta fila: V-Z
+    ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
+    ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'Ñ'],
+    ['Z', 'X', 'C', 'V', 'B', 'N', 'M']
   ];
 
   rows.forEach((row, index) => {
     const rowDiv = document.createElement('div');
     rowDiv.className = `keyboard-row row-${index + 1}`;
-    
+ 
     row.forEach(letter => {
       const button = document.createElement('button');
       button.textContent = letter;

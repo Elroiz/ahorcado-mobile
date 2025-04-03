@@ -450,12 +450,10 @@ body.mobile-ui {
 .keyboard-row {
   display: flex;
   justify-content: center;
-  gap: 10px;
+  gap: 3px;
 }
 
 #keyboard button {
-  width: 35px;
-  height: 35px;
   font-size: 1.3rem;
   border: 2px solid var(--color4);
   border-radius: 5px;
@@ -464,10 +462,10 @@ body.mobile-ui {
   cursor: pointer;
   transition: all 0.2s;
   font-family: 'Bubblegum Sans', cursive;
-  padding: 2px 1px 0px 1px !important;
+  padding: 1px 1px 0px 1px !important;
   flex: 1;
-  max-width: 35px;
-  min-width: 35px;
+  max-width: 30px;
+  min-width: 30px;
   box-sizing: content-box;
 }
 
