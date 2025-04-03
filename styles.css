@@ -454,7 +454,7 @@ body.mobile-ui {
 }
 
 #keyboard button {
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   border: 2px solid var(--color4);
   border-radius: 5px;
   background: var(--color1);
@@ -464,8 +464,8 @@ body.mobile-ui {
   font-family: 'Bubblegum Sans', cursive;
   padding: 1px 1px 0px 1px !important;
   flex: 1;
-  max-width: 30px;
-  min-width: 30px;
+  max-width: 25px;
+  min-width: 25px;
   box-sizing: content-box;
 }
 
