@@ -18,6 +18,11 @@
   --button-shadow-pressed: 0px 2px 0px black;
   --border-radius: 5px;
   --button-shadow-hover: 0 2px 4px rgba(0, 0, 0, 0.4);
+  --font-primary: 'Poppins', sans-serif;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
 }
 
 /* Reset y Estilos Base */
@@ -29,12 +34,13 @@
 }
 
 body.mobile-ui {
-  font-family: 'Bubblegum Sans', cursive;
+  font-family: var(--font-primary);
   min-height: 100vh;
   touch-action: manipulation;
   user-select: none;
   font-size: 16px;
   text-size-adjust: none;
+  font-weight: var(--font-weight-normal);
 }
 
 #bg-image {
@@ -115,6 +121,8 @@ body.mobile-ui {
   text-shadow: 2px 2px 4px var(--shadow-color);
   margin: 20px 0;
   text-align: center;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.5px;
 }
 
 .title-image {
@@ -144,11 +152,12 @@ body.mobile-ui {
 #keyboard button {
   -webkit-tap-highlight-color: transparent;
   padding: 1rem 2rem;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   border: none;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-family: 'Bubblegum Sans', cursive;
+  font-family: var(--font-primary);
+  font-weight: var(--font-weight-medium);
   color: var(--color1);
   position: relative;
   overflow: hidden;
@@ -413,18 +422,22 @@ body.mobile-ui {
 }
 
 #word-display {
+  font-family: var(--font-primary);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 2px;
   font-size: 2rem;
-  letter-spacing: 1px;
   text-align: center;
   color: var(--secondary-color);
 }
 
 .hint-text {
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: var(--secondary-color);
   margin: 10px 0;
   text-align: center;
   min-height: 1.5rem;
+  font-weight: var(--font-weight-medium);
+  line-height: 1.4;
 }
 
 .game-info {
@@ -461,7 +474,7 @@ body.mobile-ui {
   color: var(--secondary-color);
   cursor: pointer;
   transition: all 0.2s;
-  font-family: 'Bubblegum Sans', cursive;
+  font-family: var(--font-primary);
   padding: 1px 1px 0px 1px !important;
   flex: 1;
   max-width: 25px;
@@ -557,7 +570,7 @@ body.mobile-ui {
   border: none;
   background: url('img/button_02.png') center/contain no-repeat;
   cursor: pointer;
-  font-family: 'Bubblegum Sans', cursive;
+  font-family: var(--font-primary);
   font-size: 1.2rem;
   color: var(--color3);
   text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
@@ -827,10 +840,12 @@ body.mobile-ui {
 .theme-name,
 .character-name,
 .difficulty-name {
-  font-family: 'Bubblegum Sans', cursive;
-  font-size: 1.3rem;
+  font-family: var(--font-primary);
+  font-size: 1rem;
   text-transform: uppercase;
   white-space: nowrap;
+  font-weight: var(--font-weight-medium);
+  margin-top: 0.5rem;
 }
 
 /* Media Queries */
@@ -945,6 +960,7 @@ body.mobile-ui {
   line-height: 1.4;
   white-space: normal;
   word-wrap: break-word;
+  font-weight: var(--font-weight-medium);
 }
 
 .player-selection {
@@ -999,6 +1015,7 @@ body.mobile-ui {
   text-align: center;
   margin-bottom: 1.5rem;
   line-height: 1.4;
+  font-weight: var(--font-weight-bold);
 }
 
 .end-game-buttons {
@@ -1016,7 +1033,7 @@ body.mobile-ui {
   border: none;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-family: 'Bubblegum Sans', cursive;
+  font-family: var(--font-primary);
   color: var(--color1);
   position: relative;
   overflow: hidden;
@@ -1100,7 +1117,7 @@ body.mobile-ui {
   position: absolute;
   transition: all 0.3s ease;
   white-space: nowrap;
-  font-family: 'Bubblegum Sans', cursive;
+  font-family: var(--font-primary);
   opacity: 0;
   transform: translateY(10px);
 }
@@ -1201,7 +1218,7 @@ body.mobile-ui {
   padding: 0.8rem 1.5rem;
   border: none;
   border-radius: var(--border-radius);
-  font-family: 'Bubblegum Sans', cursive;
+  font-family: var(--font-primary);
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -1222,7 +1239,7 @@ body.mobile-ui {
   padding: 0.8rem 1.5rem;
   border: none;
   border-radius: var(--border-radius);
-  font-family: 'Bubblegum Sans', cursive;
+  font-family: var(--font-primary);
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.2s ease;
