@@ -16,9 +16,7 @@ const loadWords = async () => {
     const response = await fetch('palabras.json');
     const data = await response.json();
     wordList = data.palabras;
-    console.log('Palabras cargadas exitosamente:', wordList.length);
   } catch (error) {
-    console.error('Error al cargar palabras:', error);
     // Fallback a una lista básica si hay error
     wordList = [
       { word: "BOSQUE", hint: "Área densamente poblada de árboles", theme: "Naturaleza" },
@@ -114,7 +112,6 @@ const saveScores = () => {
   try {
     localStorage.setItem('hangmanScores', JSON.stringify(gameState.scores));
   } catch (error) {
-    console.error('Error al guardar puntuaciones:', error);
   }
 };
 
@@ -128,7 +125,6 @@ const loadScores = () => {
       gameState.scores = parsedScores;
     }
   } catch (error) {
-    console.error('Error al cargar puntuaciones:', error);
   }
 };
 
@@ -249,7 +245,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (button) {
       button.addEventListener('click', handler);
     } else {
-      console.error(`No se encontró el botón: ${id}`);
     }
   });
   
@@ -579,11 +574,9 @@ const setupThemeSlider = () => {
       initialValue: 'aleatorio',
       onInit: (slide, index) => {
         gameState.singleConfig.selectedTheme = slide.dataset.theme;
-        console.log('Tema inicial seleccionado:', gameState.singleConfig.selectedTheme);
       },
       onUpdate: (slide, index) => {
         gameState.singleConfig.selectedTheme = slide.dataset.theme;
-        console.log('Tema actualizado:', gameState.singleConfig.selectedTheme);
       }
     });
   });
@@ -614,7 +607,6 @@ const showPopup = () => {
   const player2Btn = document.querySelector('.player-select-btn[data-player="2"]');
   
   if (!player1Btn || !player2Btn) {
-    console.error('No se encontraron los botones de selección de jugador');
     return;
   }
   
@@ -660,8 +652,6 @@ const selectPlayer = (playerNumber) => {
     gameState.currentPlayer = gameState.multiConfig.player2;
     document.getElementById('current-player').textContent = `${gameState.multiConfig.player2.name}, ESCRIBE TU PALABRA SECRETA`;
   }
-  
-  console.log('Jugador seleccionado para escribir:', gameState.currentPlayer.name);
 };
 
 const hideOverlay = () => {
@@ -708,9 +698,10 @@ const initializeGame = () => {
   const difficultyConfig = DIFFICULTY_LEVELS[currentDifficulty];
   if (!difficultyConfig) return;
 
-  if (!gameState.secretWord || gameState.secretWord.length < 3) return;
+  if (!gameState.secretWord) return;
 
-  gameState.guessedLetters = Array(gameState.secretWord.length).fill('_');
+  const secretWord = gameState.mode === 'single' ? gameState.secretWord.word : gameState.secretWord;
+  gameState.guessedLetters = Array(secretWord.length).fill('_');
   gameState.wrongLetters = [];
   gameState.attemptsLeft = difficultyConfig.fails;
   gameState.gameActive = true;
@@ -718,7 +709,6 @@ const initializeGame = () => {
   const hintDisplay = document.getElementById('hint-display');
   if (hintDisplay) {
     if (gameState.mode === 'single') {
-      // Ya no seleccionamos una nueva palabra aquí, usamos la que ya está en gameState
       hintDisplay.textContent = '';
       hintDisplay.classList.add('hidden');
     } else {
@@ -729,10 +719,19 @@ const initializeGame = () => {
   
   setupGameElements(difficultyConfig);
   setupTimer(difficultyConfig);
-  setupHintButton();
   
   updateGameUI();
   updateCurrentPlayerAvatar();
+  
+  // Inicializar el display de la palabra
+  const wordDisplay = document.getElementById('word-display');
+  if (!wordDisplay) return;
+
+  // Mostrar la palabra con espacios entre letras
+  wordDisplay.textContent = '_ '.repeat(secretWord.length).trim();
+  
+  // Actualizar el display del juego para establecer el tamaño de fuente correcto
+  updateGameDisplay();
 };
 
 const updateCurrentPlayerAvatar = () => {
@@ -751,7 +750,6 @@ const updateGameUI = () => {
 
   const gameScreen = document.getElementById('game-screen');
   if (!gameScreen) {
-    console.error('No se encontró la pantalla de juego');
     return;
   }
   
@@ -763,7 +761,6 @@ const setupGameElements = (difficultyConfig) => {
   updateHangmanImage(difficultyConfig.startImage);
   updateGameDisplay();
   resetKeyboard();
-  setupHintButton();
   setupTimer(difficultyConfig);
 };
 
@@ -773,7 +770,6 @@ const setupTimer = (difficultyConfig) => {
   const hourglassIcon = document.querySelector('.hourglass-icon');
   
   if (!timerDisplay || !timerContainer) {
-    console.error('No se encontraron los elementos del temporizador');
     return;
   }
   
@@ -851,7 +847,9 @@ const handleLetter = letter => {
 
   button.disabled = true;
 
-  if (gameState.secretWord.includes(letter)) {
+  const secretWord = gameState.mode === 'single' ? gameState.secretWord.word : gameState.secretWord;
+  
+  if (secretWord.includes(letter)) {
     handleCorrectLetter(letter, button);
   } else {
     handleWrongLetter(letter, button);
@@ -863,12 +861,16 @@ const handleLetter = letter => {
 
 const handleCorrectLetter = (letter, button) => {
   button.classList.add('correct');
-  gameState.secretWord.split('').forEach((char, index) => {
+  const secretWord = gameState.mode === 'single' ? gameState.secretWord.word : gameState.secretWord;
+  secretWord.split('').forEach((char, index) => {
     if (char === letter) gameState.guessedLetters[index] = letter;
   });
   
   // Reiniciar el temporizador al acertar una letra
   resetTimer();
+  
+  // Actualizar el display del juego
+  updateGameDisplay();
 };
 
 const handleWrongLetter = (letter, button) => {
@@ -900,7 +902,6 @@ const endGame = win => {
   
   const playerKey = getCharacterKey(gameState.currentPlayer);
   if (!playerKey) {
-    console.error('No se encontró la clave del personaje para:', gameState.currentPlayer?.name);
     return;
   }
 
@@ -923,16 +924,13 @@ const endGame = win => {
     button.disabled = true;
   });
   
-  // Deshabilitar el botón de pista si existe
-  const hintButton = document.getElementById('hint-button');
-  if (hintButton) {
-    hintButton.disabled = true;
-  }
+  // Obtener la palabra secreta según el modo
+  const secretWord = gameState.mode === 'single' ? gameState.secretWord.word : gameState.secretWord;
   
   // Mostrar mensaje en el popup de fin de partida
   const message = win ? 
-    `¡FELICIDADES ${gameState.currentPlayer.name}! HAS GANADO.` :
-    `¡GAME OVER! LA PALABRA ERA: ${gameState.secretWord}`;
+    `¡FELICIDADES ${gameState.currentPlayer.name}! <br> HAS GANADO <br> LA PALABRA ERA: ${secretWord}` :
+    `¡GAME OVER! <br> LA PALABRA ERA: ${secretWord}`;
     
   showEndGamePopup(message);
   
@@ -949,7 +947,7 @@ const showEndGamePopup = (message) => {
   
   if (!popup || !messageElement || !newGameBtn || !nextRoundBtn) return;
   
-  messageElement.textContent = message;
+  messageElement.innerHTML = message;
   
   const handleNewGame = () => {
     popup.classList.add('hidden');
@@ -987,15 +985,15 @@ const showEndGamePopup = (message) => {
       // Mantener el tema seleccionado y seleccionar una nueva palabra
       const wordData = selectWord(gameState.singleConfig.selectedTheme);
       if (!wordData) {
-        console.error('No se pudo seleccionar una palabra');
         return;
       }
       
-      gameState.secretWord = wordData.word;
-      gameState.hint = wordData.hint;
-      
-      console.log('Nueva palabra seleccionada:', gameState.secretWord);
-      console.log('Nueva pista:', gameState.hint);
+      // Asegurarnos de que gameState.secretWord sea un objeto con las propiedades correctas
+      gameState.secretWord = {
+        word: wordData.word,
+        hint: wordData.hint,
+        theme: wordData.theme
+      };
       
       initializeGame();
     }
@@ -1059,31 +1057,24 @@ const showMobileAlert = message => {
 };
 
 const startSingleGame = () => {
-  console.log('Iniciando juego individual');
-  console.log('Dificultad seleccionada:', gameState.singleConfig.difficulty);
-  console.log('Jugador seleccionado:', gameState.singleConfig.selectedPlayer.name);
-  console.log('Tema seleccionado:', gameState.singleConfig.selectedTheme);
-  
   // Resetear el estado del juego
   resetGameState();
   
   // Obtener palabra aleatoria según tema
   const wordData = selectWord(gameState.singleConfig.selectedTheme);
   if (!wordData) {
-    console.error('No se pudo seleccionar una palabra');
     return;
   }
   
-  gameState.secretWord = wordData.word;
-  gameState.hint = wordData.hint;
-  
-  console.log('Palabra seleccionada:', gameState.secretWord);
-  console.log('Pista:', gameState.hint);
-  console.log('Tema de la palabra:', wordData.theme);
+  // Asegurarnos de que gameState.secretWord sea un objeto con las propiedades correctas
+  gameState.secretWord = {
+    word: wordData.word,
+    hint: wordData.hint,
+    theme: wordData.theme
+  };
   
   // Configurar el jugador actual como el jugador seleccionado
   gameState.currentPlayer = gameState.singleConfig.selectedPlayer;
-  console.log('Jugador actual configurado:', gameState.currentPlayer.name);
   
   // Inicializar el juego
   initializeGame();
@@ -1094,20 +1085,15 @@ const selectWord = (theme = "aleatorio") => {
   
   if (theme !== "aleatorio") {
     filteredWords = wordList.filter(word => word.theme === theme);
-    console.log(`Filtrando palabras por tema: ${theme}`);
-    console.log(`Palabras encontradas: ${filteredWords.length}`);
   }
   
   if (filteredWords.length === 0) {
-    console.warn(`No hay palabras para el tema ${theme}, usando todas las palabras`);
     filteredWords = wordList;
   }
   
   const randomIndex = Math.floor(Math.random() * filteredWords.length);
   const selectedWord = filteredWords[randomIndex];
   
-  console.log('Palabra seleccionada:', selectedWord);
-  console.log('Tema de la palabra:', selectedWord.theme);
   return selectedWord;
 };
 
@@ -1122,7 +1108,6 @@ const updateHangmanImage = () => {
     
   const difficultyConfig = DIFFICULTY_LEVELS[currentDifficulty];
   if (!difficultyConfig) {
-    console.error('Configuración de dificultad no encontrada:', currentDifficulty);
     return;
   }
 
@@ -1164,8 +1149,26 @@ const updateHangmanImage = () => {
 
 const updateGameDisplay = () => {
   const wordDisplay = document.getElementById('word-display');
+  const secretWord = gameState.mode === 'single' ? gameState.secretWord.word : gameState.secretWord;
   
+  // Actualizar el display de la palabra
   wordDisplay.textContent = gameState.guessedLetters.join(' ');
+  
+  // Ajustar el tamaño de la fuente según la longitud de la palabra
+  const wordLength = secretWord.length;
+  let fontSize = '2.2rem'; // Tamaño por defecto
+  
+  if (wordLength > 8) {
+    fontSize = '1.9rem';
+  }
+  if (wordLength > 10) {
+    fontSize = '1.6rem';
+  }
+  if (wordLength > 13) {
+    fontSize = '1.3rem';
+  }
+  
+  wordDisplay.style.fontSize = fontSize;
   
   // Actualizar teclado
   document.querySelectorAll('#keyboard button').forEach(button => {
@@ -1180,69 +1183,94 @@ const updateGameDisplay = () => {
   });
 };
 
+const createKeyboardButton = (letter) => {
+  const button = document.createElement('button');
+  button.className = 'keyboard-button';
+  button.textContent = letter;
+  button.setAttribute('data-letter', letter);
+  button.addEventListener('click', () => handleLetter(letter));
+  return button;
+};
+
 const resetKeyboard = () => {
   const keyboard = document.getElementById('keyboard');
   keyboard.innerHTML = '';
-  
-  // Definir las filas del teclado QWERTY
-  const rows = [
-    ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
-    ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'Ñ'],
-    ['Z', 'X', 'C', 'V', 'B', 'N', 'M']
-  ];
 
-  rows.forEach((row, index) => {
-    const rowDiv = document.createElement('div');
-    rowDiv.className = `keyboard-row row-${index + 1}`;
- 
-    row.forEach(letter => {
-      const button = document.createElement('button');
-      button.textContent = letter;
-      button.dataset.letter = letter;
-      button.addEventListener('touchstart', e => {
-        e.preventDefault();
-        if (!button.disabled) handleLetter(letter);
-      });
-      rowDiv.appendChild(button);
-    });
-    keyboard.appendChild(rowDiv);
+  // Primera fila
+  const firstRow = document.createElement('div');
+  firstRow.className = 'keyboard-row';
+  'QWERTYUIOP'.split('').forEach(letter => {
+    const button = createKeyboardButton(letter);
+    firstRow.appendChild(button);
   });
+  keyboard.appendChild(firstRow);
+
+  // Segunda fila
+  const secondRow = document.createElement('div');
+  secondRow.className = 'keyboard-row';
+  'ASDFGHJKLÑ'.split('').forEach(letter => {
+    const button = createKeyboardButton(letter);
+    secondRow.appendChild(button);
+  });
+  keyboard.appendChild(secondRow);
+
+  // Tercera fila
+  const thirdRow = document.createElement('div');
+  thirdRow.className = 'keyboard-row';
+  
+  // Botón de pista
+  const hintButton = document.createElement('button');
+  hintButton.className = 'keyboard-button special-button';
+  hintButton.innerHTML = '<svg class="hint-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>';
+  const isSinglePlayer = gameState.mode === 'single';
+  const currentDifficulty = isSinglePlayer ? gameState.singleConfig.difficulty : gameState.multiConfig.difficulty;
+  const isEasyOrNormal = currentDifficulty === 0 || currentDifficulty === 25;
+  hintButton.disabled = !(isSinglePlayer && isEasyOrNormal);
+  hintButton.addEventListener('click', () => {
+    if (gameState.mode === 'single' && !hintButton.disabled) {
+      const hintDisplay = document.getElementById('hint-display');
+      if (hintDisplay) {
+        hintDisplay.textContent = gameState.secretWord.hint;
+        hintDisplay.classList.remove('hidden');
+      }
+      hintButton.disabled = true;
+    }
+  });
+  thirdRow.appendChild(hintButton);
+
+  // Letras de la tercera fila
+  'ZXCVBNM'.split('').forEach(letter => {
+    const button = createKeyboardButton(letter);
+    thirdRow.appendChild(button);
+  });
+
+  // Botón de tema
+  const themeButton = document.createElement('button');
+  themeButton.className = 'keyboard-button special-button';
+  themeButton.innerHTML = '<svg class="theme-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>';
+  themeButton.disabled = !(isSinglePlayer && isEasyOrNormal);
+  themeButton.addEventListener('click', () => {
+    if (gameState.mode === 'single') {
+      showTheme();
+    }
+  });
+  thirdRow.appendChild(themeButton);
+
+  keyboard.appendChild(thirdRow);
 };
 
-const setupHintButton = () => {
-  const hintButton = document.getElementById('hint-button');
-  if (!hintButton) return;
-
-  // Solo mostrar el botón de pista en modo un jugador y dificultades Fácil y Normal
-  const currentDifficulty = gameState.singleConfig.difficulty;
-  const showHint = gameState.mode === 'single' && (currentDifficulty === 0 || currentDifficulty === 25);
-  
-  hintButton.style.display = showHint ? 'block' : 'none';
-  hintButton.disabled = false;
-  
-  // Limpiar listener anterior
-  hintButton.removeEventListener('click', handleHintClick);
-  
-  // Agregar nuevo listener
-  hintButton.addEventListener('click', handleHintClick);
-};
-
-const handleHintClick = () => {
-  const hintButton = document.getElementById('hint-button');
-  if (!hintButton || hintButton.disabled) return;
-
-  // Deshabilitar el botón después de usar la pista
-  hintButton.disabled = true;
-  
-  // Mostrar la pista
-  const hintDisplay = document.getElementById('hint-display');
-  if (hintDisplay) {
-    hintDisplay.textContent = gameState.hint;
-    hintDisplay.classList.remove('hidden');
-  }
+const showTheme = () => {
+  const themeDisplay = document.createElement('div');
+  themeDisplay.className = 'theme-display';
+  themeDisplay.textContent = `Tema: ${gameState.secretWord.theme}`;
+  document.querySelector('.word-section').appendChild(themeDisplay);
+  setTimeout(() => {
+    themeDisplay.remove();
+  }, 3000);
 };
 
 const checkGameStatus = () => {
+  const secretWord = gameState.mode === 'single' ? gameState.secretWord.word : gameState.secretWord;
   if (!gameState.guessedLetters.includes('_')) {
     endGame(true);
   } else if (gameState.attemptsLeft <= 0) {
@@ -1264,7 +1292,6 @@ const showScoreScreen = () => {
   const scoreList = document.querySelector('.score-list');
   
   if (!scoreScreen || !scoreList) {
-    console.error('No se encontraron los elementos necesarios para mostrar el marcador');
     return;
   }
   
@@ -1345,7 +1372,6 @@ const showScoreScreen = () => {
 // Función para actualizar puntuaciones
 const updateScores = (playerKey, difficulty, win) => {
   if (!playerKey || !gameState.scores[playerKey]) {
-    console.error('Jugador no válido para actualizar puntuación:', playerKey);
     return;
   }
 
@@ -1354,7 +1380,6 @@ const updateScores = (playerKey, difficulty, win) => {
   );
 
   if (!difficultyKey) {
-    console.error('Dificultad no válida para actualizar puntuación:', difficulty);
     return;
   }
 
